@@ -25,3 +25,35 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Dark Table Styling */
+.custom-dark-table {
+  background-color: #0B0F19 !important; /* Table background */
+  color: #ffffff !important; /* Text color */
+}
+
+.custom-dark-table .ant-table-thead > tr > th {
+  background-color: #1A1F2B !important; /* Header background */
+  color: #ffffff !important; /* Header text */
+  font-weight: 600;
+}
+
+.custom-dark-table .ant-table-tbody > tr > td {
+  background-color: #0B0F19 !important; /* Row background */
+  color: #ffffff !important; /* Row text */
+  border-bottom: 1px solid #1A1F2B; /* subtle row separation */
+}
+
+.custom-dark-table .ant-table-tbody > tr:hover > td {
+  background-color: #1A1F2B !important; /* Hover effect */
+}
+
+.custom-dark-table .ant-pagination-item a {
+  color: #ffffff !important; /* Pagination text */
+}
+
+.custom-dark-table .ant-pagination-item-active {
+  background-color: #1A1F2B !important;
+  border-color: #1A1F2B !important;
+  color: #ffffff !important;
+}
