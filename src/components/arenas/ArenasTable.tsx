@@ -33,7 +33,7 @@ export default function ArenasTable() {
         columns={columns}
         dataSource={data}
         className="custom-dark-table"
-        bordered={false} // remove white borders
+        bordered={false}
       />
     </section>
   )
