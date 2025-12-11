@@ -1,16 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { Input, Button } from "antd";
+import { Input, Button, message } from "antd";
 import Link from "next/link";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // TODO: Implement login logic
-    console.log({ email, password });
+  const handleLogin = async () => {
+    if (!email || !password) {
+      message.error("Email and password required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await signInWithEmailAndPassword(auth, email, password);
+      message.success("Login successful!");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      message.error(error.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,6 +56,7 @@ export default function LoginPage() {
           block
           className="mt-6 book-button"
           onClick={handleLogin}
+          loading={loading}
         >
           Login
         </Button>
