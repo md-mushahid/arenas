@@ -5,6 +5,7 @@ import { Input, Button, message } from "antd";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
+import { sendBookingConfirmation } from "@/lib/email";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,22 +13,37 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      message.error("Email and password required");
-      return;
-    }
+  try {
+    // Call YOUR API route (not Resend directly)
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'mushahidmuhammad724@gmail.com',
+        facility: '11v11 Pitch',
+        date: 'Dec 15, 2024',
+        time: '2:00 PM',
+        hours: 2
+      })
+    });
 
-    try {
-      setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
-      message.success("Login successful!");
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      message.error(error.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+    const result = await response.json();
+
+    if (result.success) {
+      alert('✅ Email sent successfully!');
+      console.log('Email sent:', result);
+    } else {
+      alert('❌ Failed to send email');
+      console.error('Error:', result.error);
     }
-  };
+    
+  } catch (error) {
+    console.error('Request failed:', error);
+    alert('❌ Something went wrong');
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0e13] px-4">
