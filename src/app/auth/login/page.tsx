@@ -12,6 +12,19 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    // sending test email
+    const response = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: "mushahidmuhammad724@gmail.com",
+        name: "Mushahid",
+      }),
+    });
+
+    const result = await response.json();
+    console.log(result);
+    // sending test email
     if (!email || !password) {
       message.error("Email and password required");
       return;
