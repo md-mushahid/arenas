@@ -5,29 +5,14 @@ import { useState } from 'react'
 import ArenaCalendar from './ArenaCalendar'
 import ContactUsForm from './.ContactUsForm'
 
-// Dummy components for each tab
-const StartTab = () => <div className="py-12 text-center text-gray-400">Start content</div>
-const PithesTab = () => <div className="py-12 text-center text-gray-400">Pithes content</div>
-const RoomsTab = () => <div className="py-12 text-center text-gray-400">Rooms content</div>
-const OtherTab = () => <div className="py-12 text-center text-gray-400">Other content</div>
-const FactsTab = () => <div className="py-12 text-center text-gray-400">Facts content</div>
 const MediaTab = () => <div className="py-12 text-center text-gray-400">Media content</div>
-const HistoryTab = () => <div className="py-12 text-center text-gray-400">History content</div>
-const FaqTab = () => <div className="py-12 text-center text-gray-400">FAQ content</div>
 
 export default function ArenaTabs() {
-  const [activeTab, setActiveTab] = useState('start')
+  const [activeTab, setActiveTab] = useState('calendar')
 
   const tabItems = [
-    { key: 'start', label: 'Start', children: <StartTab /> },
     { key: 'calendar', label: 'Calendar', children: <ArenaCalendar /> },
-    { key: 'pithes', label: 'Pithes', children: <PithesTab /> },
-    { key: 'rooms', label: 'Rooms', children: <RoomsTab /> },
-    { key: 'other', label: 'Other', children: <OtherTab /> },
-    { key: 'facts', label: 'Facts', children: <FactsTab /> },
     { key: 'media', label: 'Media', children: <MediaTab /> },
-    { key: 'history', label: 'History', children: <HistoryTab /> },
-    { key: 'faq', label: 'FAQ', children: <FaqTab /> },
     { key: 'support', label: 'Support', children: <ContactUsForm/> },
   ]
 

@@ -1,27 +1,24 @@
-import { sendBookingConfirmation } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
+import { sendMail } from "@/lib/email";
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, name } = body;
+    const { email, name, mail_type } = await req.json();
 
-    if (!email) {
+    if (!email || !mail_type) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        { success: false, error: "Missing fields" },
         { status: 400 }
       );
     }
 
-    const result = await sendBookingConfirmation(email, {
-      name,
-    });
+    const result = await sendMail(email, name, mail_type);
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error(error);
-    alert("Something went wrong!");
-  } finally {
-    alert("Email sent successfully!");
+    return NextResponse.json(
+      { success: false, error },
+      { status: 500 }
+    );
   }
 }

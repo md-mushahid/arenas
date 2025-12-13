@@ -34,7 +34,6 @@ const ContactUsForm: React.FC = () => {
   const onFinish: FormProps<ContactFormValues>['onFinish'] = (values) => {
     console.log("Form Submitted:", values);
     // Future Logic: This is where you will add your API submission or state management logic.
-    alert("Form Submitted! Check console for data."); 
   };
 
   return (
