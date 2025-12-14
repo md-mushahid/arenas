@@ -16,6 +16,7 @@ const useArenaBooking = () => {
     },
   ]);
   const [selectedSlots, setSelectedSlots] = useState([]);
+
   const formatBookingData = (booking: { start: Date; end: Date }[]) => {
     const formattedBooking = booking.map((slot, idx) => {
       const data = {
@@ -28,13 +29,25 @@ const useArenaBooking = () => {
     });
     return formattedBooking;
   };
-  const handleBooking = (booking: { start: Date; end: Date }[]) => {
-    const formattedBooking = formatBookingData(booking);
-    setEvents([...events,...formattedBooking]);
-    setSelectedSlots([])
+
+  const handlePay = async (payload: any) => {
+    const formattedBooking = formatBookingData(payload);
+    setEvents([...events, ...formattedBooking]);
+    setSelectedSlots([]);
     console.log("Formatted Booking:", formattedBooking);
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        total_bookings: formattedBooking.length,
+      }),
+    });
+    const data = await res.json();
+    console.log("Payment URL:", data);
+    window.location.href = '/arenas/1';
   };
-  return { handleBooking, events, setEvents, selectedSlots, setSelectedSlots };
+
+  return { events, setEvents, selectedSlots, setSelectedSlots, handlePay };
 };
 
 export default useArenaBooking;

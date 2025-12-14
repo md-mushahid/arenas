@@ -5,6 +5,7 @@ import { auth } from "@/lib/firebaseConfig";
 import { Button, Spin } from "antd";
 import { useAuthState } from "@/hooks/useAuthState";
 import { useEffect } from "react";
+import { userStore } from "@/lib/userStore";
 
 export default function DashboardPage() {
   const { user, loading } = useAuthState();
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      userStore.clear();
       router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);

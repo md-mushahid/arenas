@@ -10,6 +10,13 @@ interface ArenaMapProps {
 }
 
 export default function ArenaMap({ facilities }: ArenaMapProps) {
+
+  return(<section
+      className="relative h-[420px] flex items-center justify-center text-center px-4 overflow-hidden bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/images/image-1.jpg')",
+      }}
+    ></section>)
   return (
     <div className="relative h-[400px] md:h-[500px] bg-gradient-to-br from-[#1a3a2e] via-[#2a4a3e] to-[#1a3a2e] overflow-hidden">
       {/* Simulated Satellite Map Background */}

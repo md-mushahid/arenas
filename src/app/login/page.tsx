@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Input, Button } from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
+import { useAuthState } from "@/hooks/useAuthState";
 
 interface LoginFormValues {
   email: string;
@@ -11,8 +12,12 @@ interface LoginFormValues {
 }
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
+  const { user, loading, setLoading } = useAuthState();
   const router = useRouter();
+
+  useEffect(()=> {
+    if (user && !loading) router.push(`/dashboard/${user.uid}`);
+  } ,[loading])
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);

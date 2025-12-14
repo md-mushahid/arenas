@@ -19,36 +19,6 @@ export default function AddArenaDrawer({ open, onClose }: AddArenaDrawerProps) {
       label: 'Name',
       children: <NameTab onClose={onClose} />,
     },
-    {
-      key: 'admins',
-      label: 'Admins',
-      children: <div className="py-12 text-center text-gray-400">Admins content</div>,
-    },
-    {
-      key: 'pitches',
-      label: 'Pitches',
-      children: <div className="py-12 text-center text-gray-400">Pitches content</div>,
-    },
-    {
-      key: 'rooms',
-      label: 'Rooms',
-      children: <div className="py-12 text-center text-gray-400">Rooms content</div>,
-    },
-    {
-      key: 'other',
-      label: 'Other',
-      children: <div className="py-12 text-center text-gray-400">Other content</div>,
-    },
-    {
-      key: 'media',
-      label: 'Media',
-      children: <div className="py-12 text-center text-gray-400">Media content</div>,
-    },
-    {
-      key: 'faq',
-      label: 'FAQ',
-      children: <div className="py-12 text-center text-gray-400">FAQ content</div>,
-    },
   ]
 
   return (

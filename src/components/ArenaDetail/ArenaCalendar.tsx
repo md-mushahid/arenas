@@ -10,7 +10,7 @@ import useArenaBooking from "@/hooks/useAreanaBooking";
 const localizer = momentLocalizer(moment);
 
 export default function MyCalendar() {
-  const { handleBooking, events, selectedSlots, setSelectedSlots } = useArenaBooking();
+  const { events, selectedSlots, setSelectedSlots, handlePay } = useArenaBooking();
   const [date, setDate] = useState(new Date());
 
   // Dynamic min/max time per day (3 PM - 9 PM)
@@ -128,7 +128,7 @@ export default function MyCalendar() {
             <Button
               type="primary"
               style={{ marginRight: 8 }}
-              onClick={() => handleBooking(selectedSlots)} // ✅ Send selected slots to hook
+              onClick={() => handlePay(selectedSlots)} // ✅ Send selected slots to hook
             >
               Proceed to Checkout
             </Button>
