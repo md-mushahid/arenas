@@ -25,7 +25,7 @@ export default function LoginPage() {
       );
       console.log("✅ Login successful:", userCredential.user.uid);
       setLoading(false);
-      router.push("/dashboard");
+      router.push(`/dashboard/${userCredential.user.uid}`);
       
     } catch (error) {
       console.error("Login error:", error);

@@ -12,7 +12,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) router.push("/auth/login");
+    if (!loading && !user) router.push("/login");
   }, [loading])
 
   const handleLogout = async () => {

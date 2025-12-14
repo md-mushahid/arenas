@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -7,7 +6,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.NODEMAILER_SECRET,
   },
 });
-
 const templates = {
   welcome: (name: string) => `
       <p>Hello ${name},</p>
@@ -18,7 +16,6 @@ const templates = {
       <p>Your booking has been confirmed!</p>
     `,
 };
-
 export async function sendMail(
   email: string,
   name: string,

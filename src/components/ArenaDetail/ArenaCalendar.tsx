@@ -9,9 +9,6 @@ import useArenaBooking from "@/hooks/useAreanaBooking";
 
 const localizer = momentLocalizer(moment);
 
-// Example booked events as ISO strings
-
-
 export default function MyCalendar() {
   const { handleBooking, events, selectedSlots, setSelectedSlots } = useArenaBooking();
   const [date, setDate] = useState(new Date());
