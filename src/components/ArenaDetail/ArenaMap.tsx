@@ -1,14 +1,5 @@
 'use client'
 
-interface Facility {
-  name: string
-  status: string
-}
-
-interface ArenaMapProps {
-  facilities: Facility[]
-}
-
 export default function ArenaMap() {
 
   return(<section
@@ -19,10 +10,8 @@ export default function ArenaMap() {
     ></section>)
   return (
     <div className="relative h-[400px] md:h-[500px] bg-gradient-to-br from-[#1a3a2e] via-[#2a4a3e] to-[#1a3a2e] overflow-hidden">
-      {/* Simulated Satellite Map Background */}
       <div className="absolute inset-0 opacity-40">
         <svg className="w-full h-full" viewBox="0 0 1200 500">
-          {/* Roads/Paths */}
           <path
             d="M 0,200 Q 300,180 600,220 T 1200,200"
             stroke="#4a5568"
@@ -71,8 +60,8 @@ export default function ArenaMap() {
                 <div className="w-3 h-3 bg-white rounded-full"></div>
               </div>
               <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-[#1f2937] px-3 py-2 rounded shadow-lg whitespace-nowrap">
-                <p className="text-white text-sm font-medium">{facilities[0]?.name}</p>
-                <p className="text-green-400 text-xs">{facilities[0]?.status}</p>
+                <p className="text-white text-sm font-medium">{}</p>
+                <p className="text-green-400 text-xs">{}</p>
               </div>
             </div>
           </div>
@@ -83,8 +72,8 @@ export default function ArenaMap() {
                 <div className="w-3 h-3 bg-white rounded-full"></div>
               </div>
               <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-[#1f2937] px-3 py-2 rounded shadow-lg whitespace-nowrap">
-                <p className="text-white text-sm font-medium">{facilities[1]?.name}</p>
-                <p className="text-gray-400 text-xs">{facilities[1]?.status}</p>
+                <p className="text-white text-sm font-medium">{}</p>
+                <p className="text-gray-400 text-xs">{}</p>
               </div>
             </div>
           </div>

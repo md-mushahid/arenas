@@ -1,23 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Button, Spin, Tag, Tooltip, message } from "antd";
+import { CSSProperties, useState } from "react";
+import { Button, Spin, Tag, message } from "antd";
 import {
   Calendar,
   momentLocalizer,
   SlotInfo,
-  Event as CalendarEvent,
 } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import useArenaBooking from "@/hooks/useAreanaBooking";
-
 const localizer = momentLocalizer(moment);
 
 export default function MyCalendar({ arena }: any) {
   const { events, selectedSlots, setSelectedSlots, handlePay, loading, bookings } =
     useArenaBooking(arena);
-
   const [date, setDate] = useState(new Date());
 
   const getMinMax = (currentDate: Date) => {
@@ -32,36 +29,22 @@ export default function MyCalendar({ arena }: any) {
 
   const isPastSlot = (slot: SlotInfo) => {
     const now = new Date();
-    // Round 'now' up to the start of the next hour
     const nextHour = moment(now).add(1, 'hour').startOf('hour').toDate();
-
-    // Check if the slot starts before the start of the next hour
     return slot.start < nextHour;
   };
 
   const isOverlappingBooked = (slot: SlotInfo) =>
     events.some((e) => slot.start < e.end && slot.end > e.start);
 
-  /**
-   * Checks if the new slot is adjacent (consecutive) to the existing selection.
-   * A new slot must be adjacent to the beginning or the end of the current block.
-   */
   const isConsecutive = (slots: any[], newSlot: SlotInfo) => {
     if (!slots.length) return true;
-
     const sorted = [...slots].sort(
       (a, b) => a.start.getTime() - b.start.getTime()
     );
-
     const first = sorted[0];
     const last = sorted[sorted.length - 1];
-
-    // Check if new slot is consecutive to the end of the block
     const isConsecutiveToEnd = last.end.getTime() === newSlot.start.getTime();
-
-    // Check if new slot is consecutive to the start of the block
     const isConsecutiveToStart = newSlot.end.getTime() === first.start.getTime();
-
     return isConsecutiveToEnd || isConsecutiveToStart;
   };
 
@@ -83,9 +66,6 @@ export default function MyCalendar({ arena }: any) {
     );
 
     if (alreadySelected) {
-      // Logic for deselecting an already selected slot
-      // NOTE: Deselecting from the middle of a selection could break the consecutive rule for remaining slots.
-      // A more complex implementation would ensure the remaining slots are still consecutive.
       setSelectedSlots(
         selectedSlots.filter(
           (s: any) =>
@@ -95,14 +75,10 @@ export default function MyCalendar({ arena }: any) {
       );
       return;
     }
-
-    // Check for consecutiveness when adding a new slot
     if (!isConsecutive(selectedSlots, slotInfo)) {
       message.error("You can only book consecutive time slots (e.g., 5-6, 6-7, or 4-5 if 5-6 is selected).");
       return;
     }
-
-    // Add the new slot and sort to maintain order
     const newSelectedSlots = [...selectedSlots, slotInfo].sort(
         (a, b) => a.start.getTime() - b.start.getTime()
     );
@@ -110,39 +86,33 @@ export default function MyCalendar({ arena }: any) {
   };
 
   const slotPropGetter = (dateSlot: Date) => {
-    // Check if the slot is booked
-    const booked = events.find((e) => dateSlot >= e.start && dateSlot < e.end);
-
-    if (booked) {
-      return {
-        style: {
-          backgroundColor: "#f5222d", // Red for booked
-          color: "#fff",
-          pointerEvents: "none",
-        },
-      };
-    }
-
-    // Check if the slot is selected
-    const selected = selectedSlots.find(
-      (s: any) => dateSlot >= s.start && dateSlot < s.end
-    );
-
-    if (selected) {
-      return {
-        style: {
-          backgroundColor: "#1677ff", // Blue for selected
-          color: "#fff",
-        },
-      };
-    }
-
-    return {};
+  const booked = events.find((e) => dateSlot >= e.start && dateSlot < e.end);
+  if (booked) {
+    return {
+      style: {
+        cursor: "not-allowed",
+      } as CSSProperties,
+    };
+  }
+  const selected = selectedSlots.find(
+    (s: any) => dateSlot >= s.start && dateSlot < s.end
+  );
+  if (selected) {
+    return {
+      style: {
+        backgroundColor: "#1677ff",
+        color: "#fff",
+      } as CSSProperties,
+    };
+  }
+  return {
+    style: {} as CSSProperties,
   };
+};
 
   const eventPropGetter = () => ({
     style: {
-      backgroundColor: "#f5222d", // Red for booked event
+      backgroundColor: "#28ca2bff",
       color: "#fff",
       cursor: "not-allowed",
     },

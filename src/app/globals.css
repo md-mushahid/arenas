@@ -343,3 +343,16 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #4b5563;
 }
+
+.rbc-event-disabled {
+  background-color: #28ca2b !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  border-radius: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

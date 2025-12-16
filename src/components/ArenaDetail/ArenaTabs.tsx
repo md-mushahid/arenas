@@ -3,7 +3,6 @@
 import { Tabs } from 'antd'
 import { useState } from 'react'
 import ArenaCalendar from './ArenaCalendar'
-import ContactUsForm from './.ContactUsForm'
 import SupportChat from './SupportChat'
 
 const rules = [

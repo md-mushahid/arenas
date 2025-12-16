@@ -32,15 +32,6 @@ export default function DashboardPage() {
     );
   }
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="flex min-h-screen bg-[#0a0e13] text-white">
       <AppSidebar />
