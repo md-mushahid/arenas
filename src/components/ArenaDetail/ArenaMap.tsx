@@ -9,7 +9,7 @@ interface ArenaMapProps {
   facilities: Facility[]
 }
 
-export default function ArenaMap({ facilities }: ArenaMapProps) {
+export default function ArenaMap() {
 
   return(<section
       className="relative h-[420px] flex items-center justify-center text-center px-4 overflow-hidden bg-cover bg-center"

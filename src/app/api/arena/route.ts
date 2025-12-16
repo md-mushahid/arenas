@@ -62,23 +62,59 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Error creating arena:", error);
-    
+
     if (error.code === "auth/id-token-expired") {
-      return NextResponse.json(
-        { error: "Token expired" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Token expired" }, { status: 401 });
     }
-    
+
     if (error.code === "auth/argument-error") {
-      return NextResponse.json(
-        { error: "Invalid token" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     return NextResponse.json(
       { error: "Failed to create arena", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.split("Bearer ")[1];
+    const decoded = await adminAuth.verifyIdToken(token);
+
+    const arenaId = req.nextUrl.searchParams.get("arenaId");
+    if (!arenaId) {
+      return NextResponse.json({ error: "arenaId required" }, { status: 400 });
+    }
+    console.log("arenaId", arenaId);
+    const snapshot = await adminDb
+      .collection("orders")
+      .where("arena_id", "==", arenaId)
+      .where("status", "==", "paid")
+      .get();
+
+    const bookings = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        arena_id: data.arena_id,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        user_id: data.user_id,
+      };
+    });
+    console.log("bookings", bookings);
+    return NextResponse.json({ bookings });
+  } catch (err: any) {
+    console.error("GET arena bookings error:", err);
+    return NextResponse.json(
+      { error: "Failed to fetch bookings", details: err.message },
       { status: 500 }
     );
   }

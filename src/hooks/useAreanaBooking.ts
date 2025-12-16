@@ -1,63 +1,108 @@
 import { useState } from "react";
 import { useAuthState } from "./useAuthState";
+import { message } from "antd";
+import { useEffect } from "react";
 
-const useArenaBooking = () => {
-  const { user } = useAuthState();
-  const [events, setEvents] = useState([
+const useArenaBooking = (arena: any) => {
+  const { user, loading: authLoading } = useAuthState();
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([
     {
       title: "Booked",
       start: new Date("2025-12-25T10:00:00.000Z"),
       end: new Date("2025-12-25T12:00:00.000Z"),
       description: "Booked by Team A",
     },
-    {
-      title: "Team Meeting",
-      start: new Date("2025-12-25T13:00:00.000Z"),
-      end: new Date("2025-12-25T14:00:00.000Z"),
-      description: "Coach briefing",
-    },
   ]);
-  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [selectedSlots, setSelectedSlots] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const formatBookingData = (booking: { start: Date; end: Date }[]) => {
-    const formattedBooking = booking.map((slot, idx) => {
-      const data = {
+  const getConfirmedBookings = async () => {
+    if (!arena?.id || !user) return;
+    setLoading(true);
+
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch(`/api/arena?arenaId=${arena.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to fetch bookings:", err);
+        return;
+      }
+      const data = await res.json();
+      setBookings(data.bookings);
+      const calendarEvents = data.bookings.map((b: any) => ({
         title: "Booked",
-        start: slot.start,
-        end: slot.end,
-        description: `Booked slot ${idx + 1}`,
-      };
-      return data;
-    });
-    return formattedBooking;
+        start: new Date(b.start_time),
+        end: new Date(b.end_time),
+        description: `Booked by ${b.user_id}`,
+      }));
+      setEvents(calendarEvents);
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePay = async (payload: any, arenaId: any) => {
-  const formattedBooking = formatBookingData(payload);
-  setEvents([...events, ...formattedBooking]);
-  setSelectedSlots([]);
+  useEffect(() => {
+    if (!authLoading){
+      getConfirmedBookings();
+    }
+  }, [arena, authLoading]);
 
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      total_bookings: formattedBooking.length,
-      arena_id: arenaId,
-      user_id: user?.uid,
-    }),
-  });
-  const data = await res.json();
-  console.log("Payment response:", data);
+  const handlePay = async (slots: any[]) => {
+    if (!slots.length) return;
+    const sorted = [...slots].sort(
+      (a, b) => a.start.getTime() - b.start.getTime()
+    );
+    const startTime = sorted[0].start;
+    const endTime = sorted[sorted.length - 1].end;
+    const totalHours =
+      (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+    try {
+      if (!user) {
+        throw new Error("User not logged in");
+      }
+      const token = await user.getIdToken();
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          arena_id: arena.id,
+          total_booking_hours: totalHours,
+          start_time: startTime,
+          end_time: endTime,
+        }),
+      });
 
-  // Redirect to Stripe checkout
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    console.error("Stripe checkout URL not returned");
-  }
-};
+      const data = await res.json();
 
-  return { events, setEvents, selectedSlots, setSelectedSlots, handlePay };
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        message.error("Stripe checkout URL not returned");
+      }
+    } catch (err) {
+      message.error("Payment failed. Please try again.");
+    }
+  };
+
+  return {
+    events,
+    selectedSlots,
+    setSelectedSlots,
+    handlePay,
+    loading,
+    bookings,
+  };
 };
 
 export default useArenaBooking;

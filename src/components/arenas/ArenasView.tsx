@@ -1,5 +1,6 @@
 'use client'
 
+import { useSidebarStore } from "@/store/useSidebarStore"
 import AppSidebar from "../layout/AppSidebar"
 import ArenasHero from "./ArenasHero"
 import ArenasTable from "./ArenasTable"

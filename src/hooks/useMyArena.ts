@@ -18,7 +18,7 @@ export const useMyArenas = (userId?: string) => {
       try {
         const q = query(
           collection(db, "arenas"),
-          where("uid", "==", userId)
+          where("created_by", "==", userId)
         );
 
         const snapshot = await getDocs(q);
