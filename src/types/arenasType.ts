@@ -1,7 +1,7 @@
 export interface AppUser {
-  uid: string;
-  name: string;
+  user_id: string;
+  full_name: string;
   email: string;
-  role: "player" | "coach";
+  role: "player" | "coach" | "visitor";
   createdAt: string;
 }

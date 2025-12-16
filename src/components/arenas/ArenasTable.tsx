@@ -9,7 +9,7 @@ import { useEffect } from "react";
 const columns = [
   {
     title: "Name",
-    dataIndex: "arenaName",
+    dataIndex: "name",
     render: (value: string, record: any) => {
       return <a href={`/arenas/${record.id}`}>{value}</a>;
     },

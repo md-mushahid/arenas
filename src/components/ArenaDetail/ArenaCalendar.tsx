@@ -6,14 +6,16 @@ import { Calendar, momentLocalizer, SlotInfo, Event as CalendarEvent } from "rea
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import useArenaBooking from "@/hooks/useAreanaBooking";
+import { useParams } from "next/navigation";
 
 const localizer = momentLocalizer(moment);
 
 export default function MyCalendar() {
   const { events, selectedSlots, setSelectedSlots, handlePay } = useArenaBooking();
+  const params = useParams();
+  const { id } = params;
   const [date, setDate] = useState(new Date());
 
-  // Dynamic min/max time per day (3 PM - 9 PM)
   const getMinMax = (currentDate: Date) => {
     const minTime = new Date(currentDate);
     minTime.setHours(15, 0, 0);
@@ -24,19 +26,15 @@ export default function MyCalendar() {
 
   const { minTime, maxTime } = getMinMax(date);
 
-  // Check if slot is in the past
   const isPastSlot = (slot: SlotInfo | { start: Date; end: Date }) => slot.end < new Date();
 
-  // Handle selecting a slot
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     if (isPastSlot(slotInfo)) return;
 
-    // Check overlap with booked events
     const overlap = events.find(
       (e) => slotInfo.start < e.end && slotInfo.end > e.start
     );
 
-    // Check if slot already selected
     const alreadySelected = selectedSlots.find(
       (s) => slotInfo.start.getTime() === s.start.getTime() && slotInfo.end.getTime() === s.end.getTime()
     );
@@ -128,7 +126,7 @@ export default function MyCalendar() {
             <Button
               type="primary"
               style={{ marginRight: 8 }}
-              onClick={() => handlePay(selectedSlots)} // ✅ Send selected slots to hook
+              onClick={() => handlePay(selectedSlots, id)} // ✅ Send selected slots to hook
             >
               Proceed to Checkout
             </Button>

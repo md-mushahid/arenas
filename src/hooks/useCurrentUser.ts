@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { userStore, AppUser } from "@/lib/userStore";
 
-export const useCurrentUser = (user) => {
+export const useCurrentUser = (user: any) => {
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<AppUser | null>(userStore.get());
 

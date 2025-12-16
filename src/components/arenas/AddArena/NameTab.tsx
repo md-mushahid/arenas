@@ -1,14 +1,15 @@
+
 "use client";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
+import { useState } from "react";
 import UploadCard from "./UploadCard";
 import { useAuthState } from "@/hooks/useAuthState";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
+import { auth } from "@/lib/firebaseConfig";
 
 interface NameFormValues {
-  arenaName: string;
-  email?: string;
-  phone?: string;
+  name: string;
+  contact_email?: string;
+  contact_number?: string;
   address: string;
   city: string;
   country: string;
@@ -16,13 +17,63 @@ interface NameFormValues {
 
 export default function NameTab({ onClose }: { onClose: () => void }) {
   const { user } = useAuthState();
-  const [form] = Form.useForm<NameFormValues>();
-  const onFinish = async (values: NameFormValues): Promise<void> => {
-    const arenaData = { ...values, uid: user?.uid, access: 'public', full: 1, seven: 0, rooms: 0, rating: 5 };
-    const arenasCollection = collection(db, "arenas");
-    await addDoc(arenasCollection, arenaData);
-    window.location.reload();
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
+  const onFinish = async (values: any): Promise<void> => {
+    if (!user) {
+      alert("You must be logged in to create an arena");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Get the user's ID token
+      const idToken = await auth.currentUser?.getIdToken();
+
+      if (!idToken) {
+        throw new Error("Failed to get authentication token");
+      }
+
+      // Send request to API
+      const response = await fetch("/api/arena", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          name: values.name,
+          address: values.address,
+          city: values.city,
+          country: values.country,
+          contact_email: values.contact_email,
+          contact_number: values.contact_number,
+          cover_image_url: "/images/image-1.jpg",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create arena");
+      }
+
+      alert("Arena created successfully!");
+      form.resetFields();
+      onClose();
+      
+      // Reload or navigate as needed
+      window.location.reload();
+    } catch (error: any) {
+      console.error("Error creating arena:", error);
+      alert(error.message || "Failed to create arena");
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <Form
       form={form}
@@ -32,22 +83,22 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
     >
       <Form.Item
         label={<span className="text-white">Arena name *</span>}
-        name="arenaName"
+        name="name"
         rules={[{ required: true, message: "Please enter arena name" }]}
       >
         <Input className="dark-input" />
       </Form.Item>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Form.Item
-          label={<span className="text-white">eMail</span>}
-          name="email"
+          label={<span className="text-white">Email</span>}
+          name="contact_email"
         >
           <Input className="dark-input" />
         </Form.Item>
 
         <Form.Item
           label={<span className="text-white">Phone</span>}
-          name="phone"
+          name="contact_number"
         >
           <Input className="dark-input" />
         </Form.Item>
@@ -70,6 +121,7 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
 
         <Form.Item
           label={<span className="text-white">Country *</span>}
+          name="country"
           rules={[{ required: true }]}
         >
           <Input className="dark-input" />
@@ -79,7 +131,13 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
         <UploadCard title="Arena image" accept="image/*" icon="camera" />
       </div>
       <div className="flex justify-end pt-6">
-        <Button type="primary" htmlType="submit" className="px-8">
+        <Button 
+          type="primary" 
+          htmlType="submit" 
+          className="px-8"
+          loading={loading}
+          disabled={loading}
+        >
           Save
         </Button>
       </div>

@@ -1,5 +1,4 @@
 'use client'
-
 import { Drawer, Tabs } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import { useState } from 'react'
