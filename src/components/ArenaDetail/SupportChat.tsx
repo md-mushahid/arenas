@@ -63,7 +63,6 @@ const SupportChatSideBySide: React.FC<SupportChatProps> = ({ rules = [] }) => {
         sender: "ai",
         timestamp: new Date(),
       };
-
       setMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
       console.error("Error sending message:", err);

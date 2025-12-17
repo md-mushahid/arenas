@@ -7,10 +7,7 @@ export async function POST(req: NextRequest) {
     if (!message) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
-
-    // Await the chat completion instead of using .then()
     const questions = await getChatCompletion(message);
-
     return NextResponse.json({ reply: questions });
   } catch (err) {
     console.error("Error in support chat:", err);
