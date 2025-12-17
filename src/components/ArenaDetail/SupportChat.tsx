@@ -49,10 +49,19 @@ const SupportChatSideBySide: React.FC<SupportChatProps> = ({ rules = [] }) => {
     setLoading(true);
 
     try {
+      // ✅ Build conversation history (last 10 messages for context)
+      const history = messages.slice(-10).map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.content,
+      }));
+
       const res = await fetch("/api/support/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage.content }),
+        body: JSON.stringify({
+          message: userMessage.content,
+          history: history, // ✅ Send conversation history
+        }),
       });
 
       const data = await res.json();

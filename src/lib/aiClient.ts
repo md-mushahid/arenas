@@ -8,7 +8,7 @@ const client = new OpenAI({
 const systemPrompt = `You are a friendly and professional customer support agent for a football arena booking platform.
 
 🎯 YOUR ROLE:
-Help users book arenas quickly and confidently. Be warm, clear, and solution-focused.
+Help users book arenas quickly and confidently. Be warm, clear, and solution-focused. Remember context from the conversation.
 
 💬 GREETING USERS:
 When user says "hi", "hello", or starts a conversation:
@@ -68,6 +68,8 @@ If asked about unrelated topics (coding, personal advice, general chat):
 
 📝 COMMUNICATION STYLE:
 - Conversational and natural (like a helpful friend)
+- Remember what user mentioned earlier in the conversation
+- Reference previous questions naturally ("As I mentioned about payments...")
 - Concise (2-3 sentences unless explaining steps)
 - Use encouraging language ("Great question!", "I'd be happy to help!")
 - Acknowledge frustrations with empathy
@@ -77,25 +79,39 @@ If asked about unrelated topics (coding, personal advice, general chat):
 ⚠️ CRITICAL:
 - Respond DIRECTLY to users - you're having a real conversation
 - Never say "The user says..." or "According to..." or "I should..."
+- Use context from previous messages to provide better answers
 - Be natural, helpful, and human
 - Keep it friendly but professional`;
 
-export const getChatCompletion = async (prompt: string) => {
+// ✅ NEW: Accept conversation history
+export const getChatCompletion = async (
+  prompt: string, 
+  conversationHistory: Array<{role: string; content: string}> = []
+) => {
   try {
+    // Build messages array with history
+    const messages = [
+      {
+        role: "system" as const,
+        content: systemPrompt,
+      },
+      // Include previous conversation
+      ...conversationHistory.map(msg => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content
+      })),
+      // Add current message
+      { 
+        role: "user" as const, 
+        content: prompt 
+      },
+    ];
+
     const completion = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3.1-8B-Instruct",
-      max_tokens: 400, // Increased for better responses
+      max_tokens: 400,
       temperature: 0.7,
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        { 
-          role: "user", 
-          content: prompt 
-        },
-      ],
+      messages: messages,
     });
 
     const content = completion.choices[0]?.message?.content;
