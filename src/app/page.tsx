@@ -1,216 +1,75 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
-import { message } from 'antd'
-import 'leaflet/dist/leaflet.css'
+import React from 'react'
+import Link from 'next/link'
+import { ArrowRightOutlined, LoginOutlined, TrophyOutlined } from '@ant-design/icons'
 
-const MapContainer = dynamic(
-  () => import('react-leaflet').then(m => m.MapContainer),
-  { ssr: false }
-)
-const TileLayer = dynamic(
-  () => import('react-leaflet').then(m => m.TileLayer),
-  { ssr: false }
-)
-const Marker = dynamic(
-  () => import('react-leaflet').then(m => m.Marker),
-  { ssr: false }
-)
-
-function Recenter({ lat, lng }: { lat: number; lng: number }) {
-  const map = require('react-leaflet').useMap()
-  useEffect(() => {
-    map.flyTo([lat, lng], 15)
-  }, [lat, lng, map])
-  return null
-}
-
-interface Suggestion {
-  label: string
-  lat: number
-  lng: number
-}
-
-export default function IndexPage() {
-  const [address, setAddress] = useState('')
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
-  const [loading, setLoading] = useState(false)
-  useEffect(() => {
-    if (address.length < 3) {
-      setSuggestions([])
-      return
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5`
-        )
-        const data = await res.json()
-
-        // Photon returns GeoJSON
-        const formattedSuggestions: Suggestion[] = data.features.map((feature: any) => {
-          const { name, street, city, country, housenumber } = feature.properties
-
-          // Construct a cleaner display label
-          const labelParts = [name, housenumber, street, city, country].filter(Boolean)
-          const label = labelParts.join(', ')
-
-          return {
-            label: label || feature.properties.formatted || "Unknown Location",
-            lat: feature.geometry.coordinates[1],
-            lng: feature.geometry.coordinates[0]
-          }
-        })
-
-        setSuggestions(formattedSuggestions)
-      } catch (error) {
-        console.error("Error fetching suggestions:", error)
-      }
-    }, 300)
-
-    return () => clearTimeout(timer)
-  }, [address])
-
-  const handleSelectSuggestion = (suggestion: Suggestion) => {
-    setAddress(suggestion.label)
-    setLocation({ lat: suggestion.lat, lng: suggestion.lng })
-    setSuggestions([]) // Hide suggestions after selection
-  }
-
-  const handleShowOnMap = () => {
-    const match = suggestions.find(s => s.label === address)
-    if (match) {
-      handleSelectSuggestion(match)
-    } else if (suggestions.length > 0) {
-      // If no exact match but we have results, pick the first one
-      handleSelectSuggestion(suggestions[0])
-    } else {
-      message.warning("No location found. Please select from the suggestions.")
-    }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(e.target.value)
-  }
-
+export default function LandingPage() {
   return (
-    <div style={{ maxWidth: 500, margin: '40px auto', padding: 24, background: '#111620', borderRadius: 16, border: '1px solid #1f2937' }}>
-      <h2 style={{ color: 'white', marginBottom: 16 }}>Accurate Location Search</h2>
-
-      {/* 🗺️ Map */}
+    <div className="min-h-screen bg-[#0a0e13] text-white flex flex-col relative overflow-hidden">
       <div
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          height: 300,
-          borderRadius: 12,
-          overflow: 'hidden',
-          marginBottom: 20,
-          background: '#1f2937',
-          position: 'relative'
+          backgroundImage: "url('https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2940&auto=format&fit=crop')"
         }}
       >
-        {location ? (
-          <MapContainer
-            center={[location.lat, location.lng]}
-            zoom={15}
-            style={{ height: '100%', width: '100%' }}
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Marker position={[location.lat, location.lng]} />
-            <Recenter lat={location.lat} lng={location.lng} />
-          </MapContainer>
-        ) : (
-          <div
-            style={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9ca3af',
-              fontSize: 14,
-            }}
-          >
-            Enter an address to preview map
-          </div>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e13]/90 via-[#0a0e13]/80 to-[#0a0e13]"></div>
       </div>
-
-      {/* 📝 Address input with suggestions */}
-      <div style={{ marginBottom: 16, position: 'relative' }}>
-        <input
-          type="text"
-          placeholder="Search arena... (e.g. Wembley Stadium)"
-          value={address}
-          onChange={handleInputChange}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            borderRadius: 8,
-            border: '1px solid #374151',
-            backgroundColor: '#0a0e13',
-            color: 'white',
-            fontSize: 14,
-            outline: 'none'
-          }}
-        />
-
-        {/* Custom Dropdown for better UX than datalist */}
-        {suggestions.length > 0 && address.length >= 3 && (
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            background: '#1f2937',
-            border: '1px solid #374151',
-            borderRadius: 8,
-            marginTop: 4,
-            zIndex: 1000,
-            maxHeight: 200,
-            overflowY: 'auto',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
-          }}>
-            {suggestions.map((item, index) => (
-              <div
-                key={index}
-                onClick={() => handleSelectSuggestion(item)}
-                style={{
-                  padding: '10px 16px',
-                  cursor: 'pointer',
-                  color: '#e5e7eb',
-                  borderBottom: index !== suggestions.length - 1 ? '1px solid #374151' : 'none',
-                  fontSize: 14
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#374151'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                {item.label}
-              </div>
-            ))}
+      <nav className="relative z-10 flex items-center justify-between px-6 py-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-2">
+          <TrophyOutlined className="text-3xl text-yellow-500" />
+          <span className="text-2xl font-bold tracking-tight text-white">Zporter</span>
+        </div>
+        <div className="hidden md:flex items-center gap-6">
+          <Link href="/login" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">
+            Log In
+          </Link>
+          <Link
+            href="/signup"
+            className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </nav>
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto animate-fade-in pb-20">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-6 backdrop-blur-sm">
+          <span>🚀 The #1 Arena Booking Platform</span>
+        </div>
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent drop-shadow-sm">
+          Play Like a Pro. <br />
+          <span className="text-white">Book in Seconds.</span>
+        </h1>
+        <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl leading-relaxed">
+          Find and book top-rated football arenas near you. Manage your team, schedule matches, and handle payments—all in one place.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <Link
+            href="/arenas"
+            className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg hover:shadow-blue-600/30 flex items-center justify-center gap-2 group"
+          >
+            Get Started
+            <ArrowRightOutlined className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 text-center opacity-80">
+          <div>
+            <p className="text-3xl font-bold text-white">50+</p>
+            <p className="text-gray-500 text-sm uppercase tracking-wider mt-1">Premium Arenas</p>
           </div>
-        )}
-      </div>
-
-      <button
-        onClick={handleShowOnMap}
-        disabled={loading}
-        style={{
-          width: '100%',
-          padding: '12px',
-          borderRadius: 8,
-          background: '#2563eb',
-          color: '#fff',
-          border: 'none',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.7 : 1,
-          fontSize: 14,
-          fontWeight: 600
-        }}
-      >
-        Show on Map
-      </button>
+          <div>
+            <p className="text-3xl font-bold text-white">10k+</p>
+            <p className="text-gray-500 text-sm uppercase tracking-wider mt-1">Happy Players</p>
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <p className="text-3xl font-bold text-white">24/7</p>
+            <p className="text-gray-500 text-sm uppercase tracking-wider mt-1">Instant Booking</p>
+          </div>
+        </div>
+      </main>
+      <footer className="relative z-10 py-6 text-center text-gray-600 text-sm border-t border-white/5 bg-[#0a0e13]/90 backdrop-blur-xl">
+        <p>&copy; {new Date().getFullYear()} Zporter. All rights reserved.</p>
+      </footer>
     </div>
   )
 }
