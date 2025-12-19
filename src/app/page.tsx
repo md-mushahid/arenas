@@ -37,9 +37,6 @@ export default function IndexPage() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [loading, setLoading] = useState(false)
-
-  // 🔍 Fetch suggestions using Photon API (Komoot)
-  // Photon is often faster and better at "autocomplete" ranking than standard Nominatim
   useEffect(() => {
     if (address.length < 3) {
       setSuggestions([])

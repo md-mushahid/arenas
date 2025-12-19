@@ -8,20 +8,54 @@ import SupportChat from './SupportChat'
 const rules = [
   {
     id: "1",
-    title: "Cancellation",
-    description: "You can cancel your booking up to 24 hours before the start time.",
+    title: "Cancellation Policy",
+    description:
+      "Bookings may be cancelled free of charge up to 24 hours before the scheduled start time. Cancellations made within 24 hours of the booking time are non-refundable.",
   },
   {
     id: "2",
-    title: "Refund",
-    description: "Refunds are processed within 3-5 business days.",
+    title: "Refund Policy",
+    description:
+      "Approved refunds will be processed to the original payment method within 3–5 business days. Processing time may vary depending on the payment provider.",
   },
   {
     id: "3",
-    title: "No-shows",
-    description: "No refund for no-shows. Please arrive on time.",
+    title: "No-Show Policy",
+    description:
+      "Failure to arrive at the arena within 15 minutes of the booked start time will be considered a no-show. No refunds or rescheduling will be provided in such cases.",
+  },
+  {
+    id: "4",
+    title: "Late Arrival",
+    description:
+      "Late arrivals will not be granted time extensions. The booking will end at the originally scheduled time.",
+  },
+  {
+    id: "5",
+    title: "Usage Rules",
+    description:
+      "The arena must be used only for the purpose specified at the time of booking. Any misuse may result in immediate termination of the session without refund.",
+  },
+  {
+    id: "6",
+    title: "Damage & Liability",
+    description:
+      "Users are responsible for any damage caused to arena property or equipment during their booking and may be charged accordingly.",
+  },
+  {
+    id: "7",
+    title: "Safety & Conduct",
+    description:
+      "All participants must follow arena safety guidelines and staff instructions at all times. Unsafe behavior may result in removal from the premises.",
+  },
+  {
+    id: "8",
+    title: "Management Rights",
+    description:
+      "Arena management reserves the right to cancel or modify bookings due to maintenance, safety concerns, or unforeseen circumstances. In such cases, a full refund will be issued.",
   },
 ];
+
 
 const MediaTab = () => <div className="py-12 text-center text-gray-400">Media content</div>
 
