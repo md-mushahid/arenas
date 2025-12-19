@@ -56,9 +56,6 @@ const rules = [
   },
 ];
 
-
-const MediaTab = () => <div className="py-12 text-center text-gray-400">Media content</div>
-
 export default function ArenaTabs({ arena }: any) {
   const [activeTab, setActiveTab] = useState('calendar')
   const tabItems = [

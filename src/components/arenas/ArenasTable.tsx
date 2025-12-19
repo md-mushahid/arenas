@@ -1,6 +1,5 @@
 "use client";
 import { db } from "@/lib/firebaseConfig";
-import { TODO } from "@/lib/type";
 import { Table, Rate } from "antd";
 import { collection, getDocs } from "firebase/firestore";
 import { useState } from "react";

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       rating: 5,
       contact_email: contact_email || null,
       contact_number: contact_number || null,
-      cover_image_url: cover_image_url || "/images/image-1.jpg",
+      cover_image_url: cover_image_url || null,
       created_by: uid,
       created_at: new Date().toISOString(),
     };

@@ -57,6 +57,7 @@ export default function ArenaDetailPage() {
           image={arena?.cover_image_url}
           lat={arena?.latitude}
           lng={arena?.longitude}
+          name={arena?.name}
         />
         <ArenaTabs arena={arena} />
       </main>

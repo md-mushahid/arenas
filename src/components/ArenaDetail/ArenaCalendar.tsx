@@ -1,7 +1,7 @@
 "use client";
 
 import { CSSProperties, useState } from "react";
-import { Button, Spin, Tag, message, Card } from "antd";
+import { Button, Spin, message, Card } from "antd";
 import {
   Calendar,
   momentLocalizer,
@@ -169,7 +169,7 @@ export default function MyCalendar({ arena }: any) {
                     min={minTime}
                     max={maxTime}
                     selectable
-                    views={["week", "day"]}
+                    views={["week"]}
                     defaultView="week"
                     step={60}
                     timeslots={1}
@@ -181,8 +181,6 @@ export default function MyCalendar({ arena }: any) {
              </div>
           </div>
       </Card>
-
-      {/* Right User Bar / Selected Sessions - Hidden purely until items selected */}
       {selectedSlots.length > 0 && (
         <div className="w-full xl:w-72 shrink-0 animate-slide-in-right">
             <Card className="border border-blue-500/30 bg-blue-500/5 h-full flex flex-col">
