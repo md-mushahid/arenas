@@ -251,7 +251,6 @@ export default function DashboardPage() {
                       {arena.cover_image_url ? (
                         <img src={arena.cover_image_url} alt={arena.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       ) : (arena.latitude && arena.longitude) ? (
-                        // 🗺️ Map Fallback if no image but coordinates exist
                         <div className="w-full h-full relative z-0">
                           <MapContainer
                             center={[arena.latitude, arena.longitude]}
@@ -266,7 +265,6 @@ export default function DashboardPage() {
                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                             <Marker position={[arena.latitude, arena.longitude]} />
                           </MapContainer>
-                          {/* Overlay to darken map slightly for text readability */}
                           <div className="absolute inset-0 bg-black/20 pointer-events-none z-[1000]"></div>
                         </div>
                       ) : (
