@@ -18,7 +18,7 @@
   --foreground-rgb: 237, 237, 237;
   --background-start-rgb: 10, 14, 19;
   --background-end-rgb: 0, 0, 0;
-  
+
   /* Ant Design Theme Overrides */
   --ant-primary-color: #3b82f6;
   --ant-primary-color-hover: #60a5fa;
@@ -93,13 +93,14 @@ body {
 .ant-modal-close {
   color: #9ca3af !important;
 }
+
 .ant-modal-close:hover {
   color: #fff !important;
-  background-color: rgba(255,255,255,0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .ant-modal-body {
-    color: #d1d5db !important;
+  color: #d1d5db !important;
 }
 
 .ant-modal-footer {
@@ -118,31 +119,40 @@ body {
   border-bottom: 1px solid #1f2937 !important;
   color: #fff !important;
 }
+
 .ant-card-head-title {
-    color: #fff !important;
-    font-weight: 600;
+  color: #fff !important;
+  font-weight: 600;
 }
 
 .ant-card-bordered {
-    border: 1px solid #1f2937 !important;
+  border: 1px solid #1f2937 !important;
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #fff !important;
 }
+
 .ant-typography {
-    color: #d1d5db !important;
+  color: #d1d5db !important;
 }
+
 .ant-descriptions-item-label {
-    color: #9ca3af !important;
+  color: #9ca3af !important;
 }
+
 .ant-descriptions-item-content {
-    color: #fff !important;
+  color: #fff !important;
 }
 
 /* Inputs & Forms */
-.ant-input, 
+.ant-input,
 .ant-input-password,
 .ant-input-number,
 .ant-picker {
@@ -151,17 +161,19 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff !important;
 }
 
-.ant-input:hover, .ant-input:focus,
-.ant-picker:hover, .ant-picker-focused {
+.ant-input:hover,
+.ant-input:focus,
+.ant-picker:hover,
+.ant-picker-focused {
   border-color: #3b82f6 !important;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
 .ant-input::placeholder {
-    color: #4b5563 !important;
+  color: #4b5563 !important;
 }
 
-.ant-form-item-label > label {
+.ant-form-item-label>label {
   color: #d1d5db !important;
 }
 
@@ -171,120 +183,236 @@ h1, h2, h3, h4, h5, h6 {
   border-color: #1f2937 !important;
   color: #fff !important;
 }
+
 .ant-select-dropdown {
-    background-color: #111620 !important;
-    border: 1px solid #1f2937;
-    padding: 4px;
+  background-color: #111620 !important;
+  border: 1px solid #1f2937;
+  padding: 4px;
 }
+
 .ant-select-item {
-    color: #d1d5db !important;
-    border-radius: 4px;
+  color: #d1d5db !important;
+  border-radius: 4px;
 }
+
 .ant-select-item-option-selected {
-    background-color: rgba(59, 130, 246, 0.2) !important;
-    color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  color: #3b82f6 !important;
 }
+
 .ant-select-item-option-active {
-    background-color: #1f2937 !important;
+  background-color: #1f2937 !important;
 }
 
 /* Buttons */
 .ant-btn {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
 }
+
 .ant-btn-primary {
-    background: #2563eb !important;
-    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39) !important;
+  background: #2563eb !important;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39) !important;
 }
+
 .ant-btn-primary:hover {
-    background: #1d4ed8 !important;
-    transform: translateY(-1px);
+  background: #1d4ed8 !important;
+  transform: translateY(-1px);
 }
+
 .ant-btn-default {
-    background: transparent !important;
-    border-color: #374151 !important;
-    color: #d1d5db !important;
+  background: transparent !important;
+  border-color: #374151 !important;
+  color: #d1d5db !important;
 }
+
 .ant-btn-default:hover {
-    border-color: #60a5fa !important;
-    color: #60a5fa !important;
+  border-color: #60a5fa !important;
+  color: #60a5fa !important;
 }
 
 /* Spin/Loader */
 .ant-spin-dot-item {
-    background-color: #3b82f6 !important;
+  background-color: #3b82f6 !important;
 }
 
 /* Table */
 .ant-table {
-    background: #111620 !important;
-    color: #d1d5db !important;
+  background: #111620 !important;
+  color: #d1d5db !important;
 }
-.ant-table-thead > tr > th {
-    background: #1a202e !important;
-    color: #fff !important;
-    font-weight: 600 !important;
-    border-bottom: 1px solid #1f2937 !important;
+
+.ant-table-thead>tr>th {
+  background: #1a202e !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #1f2937 !important;
 }
-.ant-table-tbody > tr > td {
-    border-bottom: 1px solid #1f2937 !important;
+
+.ant-table-tbody>tr>td {
+  border-bottom: 1px solid #1f2937 !important;
 }
-.ant-table-tbody > tr:hover > td {
-    background: #1f2937 !important;
+
+.ant-table-tbody>tr:hover>td {
+  background: #1f2937 !important;
 }
+
 .ant-pagination-item a {
-    color: #d1d5db !important;
+  color: #d1d5db !important;
 }
+
 .ant-pagination-item-active {
-    background: #1f2937 !important;
-    border-color: #3b82f6 !important;
+  background: #1f2937 !important;
+  border-color: #3b82f6 !important;
 }
+
 .ant-pagination-item-active a {
-    color: #3b82f6 !important;
+  color: #3b82f6 !important;
 }
+
 .ant-empty-description {
-    color: #6b7280 !important;
+  color: #6b7280 !important;
 }
 
 /* Tabs */
 .ant-tabs-tab {
-    color: #9ca3af !important; 
+  color: #9ca3af !important;
 }
+
 .ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: #3b82f6 !important;
+  color: #3b82f6 !important;
 }
+
 .ant-tabs-ink-bar {
-    background: #3b82f6 !important;
+  background: #3b82f6 !important;
 }
 
 /* Notification/Message */
 .ant-message-notice-content {
-    background: #111620 !important;
-    border: 1px solid #1f2937;
-    color: #fff !important;
+  background: #111620 !important;
+  border: 1px solid #1f2937;
+  color: #fff !important;
 }
 
 /* --- App Specific Legacy Styles (Modernized) --- */
 /* Kept for backward compatibility but using new vars/styles */
 
 .dark-modal .ant-modal-content {
-    background-color: #111620 !important;
-    border: 1px solid #1f2937;
+  background-color: #111620 !important;
+  border: 1px solid #1f2937;
 }
 
 /* Calendar Overrides for Syncfusion/Other if needed */
 .e-schedule {
-    border-color: #1f2937 !important;
-    background-color: #111620 !important;
-    color: #fff !important;
+  border-color: #1f2937 !important;
+  background-color: #111620 !important;
+  color: #fff !important;
 }
+
 .e-schedule .e-vertical-view .e-date-header-wrap .e-date-header {
-    color: #fff !important;
+  color: #fff !important;
 }
+
 .e-schedule .e-vertical-view .e-day-wrapper .e-appointment {
-    background: #2563eb !important;
-    border-color: #1d4ed8 !important;
-    color: #fff !important;
-    border-radius: 4px;
+  background: #2563eb !important;
+  border-color: #1d4ed8 !important;
+  color: #fff !important;
+  border-radius: 4px;
+}
+
+/* --- React Big Calendar Overrides --- */
+.rbc-calendar {
+  color: #ededed;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.rbc-off-range-bg {
+  background: #0a0e13;
+}
+
+.rbc-today {
+  background-color: transparent !important;
+  /* Use a subtle border or highlight instead of a solid block */
+  /* border: 1px solid rgba(59, 130, 246, 0.3) !important; */
+}
+
+/* Header */
+.rbc-header {
+  border-bottom: 1px solid #1f2937 !important;
+  color: #9ca3af;
+  padding: 12px 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Grid Lines & Borders - Soften them */
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view {
+  border: 1px solid #1f2937 !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rbc-day-bg+.rbc-day-bg {
+  border-left: 1px solid #1f2937 !important;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid #1f2937 !important;
+  min-height: 60px;
+  /* Give rows some breathing room */
+}
+
+.rbc-time-content {
+  border-top: 1px solid #1f2937 !important;
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid #1f2937 !important;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid #1f2937 !important;
+}
+
+/* Events */
+.rbc-event {
+  border-radius: 6px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rbc-current-time-indicator {
+  background-color: #3b82f6 !important;
+}
+
+/* Label text */
+.rbc-label {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+/* Toolbar (Month/Week/Day) buttons */
+.rbc-toolbar button {
+  color: #d1d5db;
+  border: 1px solid #374151;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #1f2937;
+  color: #fff;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+  box-shadow: none;
+}
+
+.rbc-toolbar button:focus {
+  color: #fff;
+  background-color: #1f2937;
 }

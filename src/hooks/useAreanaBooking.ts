@@ -35,11 +35,45 @@ const useArenaBooking = (arena: any) => {
       }
       const data = await res.json();
       setBookings(data.bookings);
+
+      // Fetch user info for bookings
+      const userIds = Array.from(new Set(data.bookings.map((b: any) => b.user_id)));
+      let userMap: Record<string, string> = {};
+
+      if (userIds.length > 0) {
+        try {
+          const { collection, query, where, getDocs } = await import("firebase/firestore");
+          const { db } = await import("@/lib/firebaseConfig");
+          
+          // Firestore 'in' query supports max 10 items. If we have more, we might need multiple queries or just fetch one by one (or strict limit).
+          // For now, let's assume < 10 active bookers or handle batches if needed. 
+          // To be safe and simple: just fetch all users? No, that's bad.
+          // Let's loop if chunks > 10.
+          
+          const uniqueIds = userIds as string[];
+          const chunks = [];
+          for (let i = 0; i < uniqueIds.length; i += 10) {
+            chunks.push(uniqueIds.slice(i, i + 10));
+          }
+
+          for (const chunk of chunks) {
+              const q = query(collection(db, "users"), where("uid", "in", chunk));
+              const querySnapshot = await getDocs(q);
+              querySnapshot.forEach((doc) => {
+                  userMap[doc.data().uid] = doc.data().name || "Unknown User";
+              });
+          }
+        } catch (error) {
+            console.error("Error fetching user details:", error);
+        }
+      }
+
       const calendarEvents = data.bookings.map((b: any) => ({
-        title: "Booked",
+        title: userMap[b.user_id] ? `Booked by ${userMap[b.user_id]}` : "Booked",
         start: new Date(b.start_time),
         end: new Date(b.end_time),
-        description: `Booked by ${b.user_id}`,
+        description: `Booked by ${userMap[b.user_id] || "User"}`,
+        resource: b // Keep original booking data
       }));
       setEvents(calendarEvents);
     } catch (err) {

@@ -1,6 +1,7 @@
+
 import { useState, useEffect, useRef } from "react";
-import { Input, Button, Spin } from "antd";
-import { SendOutlined } from "@ant-design/icons";
+import { Input, Button, Spin, Card } from "antd";
+import { SendOutlined, RobotOutlined, UserOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 interface Message {
   id: string;
@@ -92,112 +93,87 @@ const SupportChatSideBySide: React.FC<SupportChatProps> = ({ rules = [] }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: 500,
-        gap: 16,
-      }}
-    >
+    <div className="flex flex-col md:flex-row gap-6 h-[600px] w-full">
       {/* Left Chat Section */}
-      <div
-        style={{
-          flex: 1, // take half width
-          backgroundColor: "#1f1f1f",
-          color: "#fff",
-          borderRadius: 8,
-          padding: 16,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <h3 style={{ marginBottom: 12 }}>AI Support</h3>
-        <div
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            marginBottom: 8,
-            paddingRight: 8,
-          }}
-        >
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              style={{
-                textAlign: msg.sender === "user" ? "right" : "left",
-                marginBottom: 6,
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-block",
-                  padding: "8px 12px",
-                  borderRadius: 16,
-                  backgroundColor: msg.sender === "user" ? "#4260fa" : "#333",
-                  color: "#fff",
-                  maxWidth: "80%",
-                  wordWrap: "break-word",
-                }}
-              >
-                {msg.content}
-              </div>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+      <Card className="flex-1 glass-panel border-0 flex flex-col h-full" bodyStyle={{ padding: '0', display: 'flex', flexDirection: 'column', height: '100%' }}>
+         <div className="p-4 border-b border-gray-800 bg-gray-900/50 rounded-t-xl flex items-center gap-2">
+            <RobotOutlined className="text-blue-500 text-lg" />
+            <h3 className="text-white font-semibold text-lg m-0">AI Support Assistant</h3>
+         </div>
+         
+         <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[#0a0e13]/50">
+            {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-gray-500 opacity-50">
+                    <RobotOutlined className="text-4xl mb-2" />
+                    <p>Ask me anything about the arena!</p>
+                </div>
+            )}
+            {messages.map((msg) => (
+                <div
+                key={msg.id}
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                >
+                    <div className={`
+                        max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm
+                        ${msg.sender === "user" 
+                            ? "bg-blue-600 text-white rounded-br-none" 
+                            : "bg-[#1f2937] text-gray-200 border border-gray-700 rounded-bl-none"}
+                    `}>
+                        {msg.content}
+                    </div>
+                </div>
+            ))}
+            <div ref={messagesEndRef} />
+         </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Type a message..."
-            disabled={loading}
-            style={{ borderRadius: 20 }}
-          />
-          <Button
-            onClick={sendMessage}
-            icon={<SendOutlined />}
-            type="primary"
-            disabled={loading}
-          >
-            {loading ? <Spin size="small" /> : "Send"}
-          </Button>
-        </div>
-      </div>
+         <div className="p-4 bg-gray-900/50 border-t border-gray-800 rounded-b-xl">
+             <div className="flex gap-2">
+                <Input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder="Type your question..."
+                    disabled={loading}
+                    className="flex-1 bg-[#111620] border-gray-700 text-white placeholder-gray-500 rounded-full hover:border-blue-500 focus:border-blue-500"
+                    size="large"
+                />
+                <Button
+                    onClick={sendMessage}
+                    type="primary"
+                    shape="circle"
+                    size="large"
+                    icon={loading ? <Spin size="small" /> : <SendOutlined />}
+                    disabled={loading}
+                    className="flex-shrink-0 shadow-lg shadow-blue-500/20 border-none bg-blue-600 hover:bg-blue-500"
+                />
+             </div>
+         </div>
+      </Card>
 
       {/* Right Rules Section */}
-      <div
-        style={{
-          flex: 1, // take half width
-          backgroundColor: "#f9f9f9",
-          padding: 16,
-          borderRadius: 8,
-          overflowY: "auto",
-        }}
-      >
-        <h3 style={{ marginBottom: 12 }}>Arena Booking Rules</h3>
-        {rules.length === 0 ? (
-          <p>No rules defined.</p>
-        ) : (
-          rules.map((rule) => (
-            <div
-              key={rule.id}
-              style={{
-                marginBottom: 12,
-                padding: 12,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                backgroundColor: "#fff",
-              }}
-            >
-              <strong>{rule.title}</strong>
-              <p style={{ margin: 0 }}>{rule.description}</p>
-            </div>
-          ))
-        )}
-      </div>
+      <Card className="flex-1 glass-panel border-0 h-full flex flex-col" bodyStyle={{ padding: '0', display: 'flex', flexDirection: 'column', height: '100%' }}>
+         <div className="p-4 border-b border-gray-800 bg-gray-900/50 rounded-t-xl flex items-center gap-2">
+            <QuestionCircleOutlined className="text-yellow-500 text-lg" />
+            <h3 className="text-white font-semibold text-lg m-0">Arena Rules & Guidelines</h3>
+         </div>
+
+         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[#0a0e13]/50 rounded-b-xl">
+            {rules.length === 0 ? (
+                 <div className="flex flex-col items-center justify-center h-full text-gray-500 opacity-50">
+                    <p>No special rules defined for this arena.</p>
+                 </div>
+            ) : (
+                <div className="space-y-3">
+                    {rules.map((rule) => (
+                        <div key={rule.id} className="bg-[#1f2937]/50 border border-gray-800 p-4 rounded-xl hover:bg-[#1f2937] transition-colors duration-200">
+                             <h4 className="text-blue-400 font-medium mb-1 text-base">{rule.title}</h4>
+                             <p className="text-gray-400 text-sm leading-relaxed m-0">{rule.description}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+         </div>
+      </Card>
     </div>
   );
 };

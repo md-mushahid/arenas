@@ -29,7 +29,6 @@ export default function ArenaTabs({ arena }: any) {
   const [activeTab, setActiveTab] = useState('calendar')
   const tabItems = [
     { key: 'calendar', label: 'Calendar', children: <ArenaCalendar arena={arena} /> },
-    { key: 'media', label: 'Media', children: <MediaTab /> },
     { key: 'support', label: 'Support', children: <SupportChat rules={rules} /> },
   ]
 
