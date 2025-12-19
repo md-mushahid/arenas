@@ -1,4 +1,3 @@
-
 "use client";
 import { Button, Form, Input, message } from "antd";
 import { useState } from "react";
@@ -19,6 +18,7 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
   const { user } = useAuthState();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   const onFinish = async (values: any): Promise<void> => {
     if (!user) {
@@ -50,7 +50,7 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
           country: values.country,
           contact_email: values.contact_email,
           contact_number: values.contact_number,
-          cover_image_url: "/images/image-1.jpg",
+          cover_image_url: imageUrl || "/images/image-1.jpg",
         }),
       });
 
@@ -62,6 +62,7 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
 
       alert("Arena created successfully!");
       form.resetFields();
+      setImageUrl("");
       onClose();
       
       // Reload or navigate as needed
@@ -128,7 +129,12 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
         </Form.Item>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <UploadCard title="Arena image" accept="image/*" icon="camera" />
+        <UploadCard 
+          title="Arena image" 
+          accept="image/*" 
+          icon="camera" 
+          onUpload={setImageUrl}
+        />
       </div>
       <div className="flex justify-end pt-6">
         <Button 

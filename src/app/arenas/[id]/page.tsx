@@ -53,7 +53,7 @@ export default function ArenaDetailPage() {
       <AppSidebar />
 
       <main className="flex-1 overflow-x-hidden">
-        <ArenaMap />
+        <ArenaMap image={arena?.cover_image_url} />
         <ArenaTabs arena={arena} />
       </main>
     </div>

@@ -22,12 +22,14 @@ export default function EditArenaDrawer({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   useEffect(() => {
     if (open && arenaId) {
       fetchArenaData(arenaId);
     } else {
       form.resetFields();
+      setImageUrl("");
     }
   }, [open, arenaId]);
 
@@ -37,6 +39,9 @@ export default function EditArenaDrawer({
       const data = await getArena(id);
       if (data) {
         form.setFieldsValue(data);
+        if (data.cover_image_url) {
+          setImageUrl(data.cover_image_url);
+        }
       } else {
         message.error("Arena not found");
         onClose();
@@ -54,7 +59,10 @@ export default function EditArenaDrawer({
 
     try {
       setLoading(true);
-      await updateArena(arenaId, values);
+      await updateArena(arenaId, {
+        ...values,
+        cover_image_url: imageUrl,
+      });
       message.success("Arena updated successfully");
       if (onSuccess) onSuccess();
       onClose();
@@ -146,12 +154,13 @@ export default function EditArenaDrawer({
               </Form.Item>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              {/* Note: UploadCard logic might need handling for edit mode if it expects onUpload props etc. 
-                  For now we render it but the form doesn't handle the image upload explicitly in this simplified version 
-                  unless UploadCard integrates with Form.Item or we pass state. 
-                  Assuming read-only or similar for now as logic is complex for file upload reuse. 
-              */}
-              <UploadCard title="Arena image" accept="image/*" icon="camera" />
+              <UploadCard 
+                title="Arena image" 
+                accept="image/*" 
+                icon="camera"
+                onUpload={setImageUrl}
+                initialImage={imageUrl}
+              />
             </div>
             <div className="flex justify-end pt-6">
               <Button

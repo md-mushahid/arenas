@@ -3,6 +3,7 @@ export type AppUser = {
   email: string;
   name: string;
   role: string;
+  photoURL?: string;
 };
 
 // in-memory storage

@@ -2,7 +2,7 @@
 
 import { adminDb } from "@/lib/firbaseAdminConfig";
 
-export async function getArena(arenaId: string) {
+export async function getArena(arenaId: string): Promise<any> {
   try {
     if (!arenaId) return null;
 
