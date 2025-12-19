@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { message } from 'antd'
+import 'leaflet/dist/leaflet.css'
 
-// Map components (client only)
 const MapContainer = dynamic(
   () => import('react-leaflet').then(m => m.MapContainer),
   { ssr: false }
@@ -17,10 +18,18 @@ const Marker = dynamic(
   { ssr: false }
 )
 
+function Recenter({ lat, lng }: { lat: number; lng: number }) {
+  const map = require('react-leaflet').useMap()
+  useEffect(() => {
+    map.flyTo([lat, lng], 15)
+  }, [lat, lng, map])
+  return null
+}
+
 interface Suggestion {
-  display_name: string
-  lat: string
-  lon: string
+  label: string
+  lat: number
+  lng: number
 }
 
 export default function IndexPage() {
@@ -29,7 +38,8 @@ export default function IndexPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // 🔍 Fetch suggestions while typing (debounced)
+  // 🔍 Fetch suggestions using Photon API (Komoot)
+  // Photon is often faster and better at "autocomplete" ranking than standard Nominatim
   useEffect(() => {
     if (address.length < 3) {
       setSuggestions([])
@@ -37,55 +47,71 @@ export default function IndexPage() {
     }
 
     const timer = setTimeout(async () => {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          address
-        )}&limit=5`
-      )
-      const data = await res.json()
-      setSuggestions(data || [])
-    }, 400)
+      try {
+        const res = await fetch(
+          `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5`
+        )
+        const data = await res.json()
+
+        // Photon returns GeoJSON
+        const formattedSuggestions: Suggestion[] = data.features.map((feature: any) => {
+          const { name, street, city, country, housenumber } = feature.properties
+
+          // Construct a cleaner display label
+          const labelParts = [name, housenumber, street, city, country].filter(Boolean)
+          const label = labelParts.join(', ')
+
+          return {
+            label: label || feature.properties.formatted || "Unknown Location",
+            lat: feature.geometry.coordinates[1],
+            lng: feature.geometry.coordinates[0]
+          }
+        })
+
+        setSuggestions(formattedSuggestions)
+      } catch (error) {
+        console.error("Error fetching suggestions:", error)
+      }
+    }, 300)
 
     return () => clearTimeout(timer)
   }, [address])
 
-  // 📍 Convert selected address to map
-  const handleShowOnMap = async () => {
-    if (!address) return
+  const handleSelectSuggestion = (suggestion: Suggestion) => {
+    setAddress(suggestion.label)
+    setLocation({ lat: suggestion.lat, lng: suggestion.lng })
+    setSuggestions([]) // Hide suggestions after selection
+  }
 
-    setLoading(true)
-
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        address
-      )}&limit=1`
-    )
-    const data = await res.json()
-
-    if (!data || data.length === 0) {
-      alert('Address not found')
-      setLoading(false)
-      return
+  const handleShowOnMap = () => {
+    const match = suggestions.find(s => s.label === address)
+    if (match) {
+      handleSelectSuggestion(match)
+    } else if (suggestions.length > 0) {
+      // If no exact match but we have results, pick the first one
+      handleSelectSuggestion(suggestions[0])
+    } else {
+      message.warning("No location found. Please select from the suggestions.")
     }
+  }
 
-    setLocation({
-      lat: parseFloat(data[0].lat),
-      lng: parseFloat(data[0].lon),
-    })
-
-    setLoading(false)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value)
   }
 
   return (
-    <div style={{ maxWidth: 500, margin: '0 auto', padding: 16 }}>
-      {/* 🗺️ Map like profile image */}
+    <div style={{ maxWidth: 500, margin: '40px auto', padding: 24, background: '#111620', borderRadius: 16, border: '1px solid #1f2937' }}>
+      <h2 style={{ color: 'white', marginBottom: 16 }}>Accurate Location Search</h2>
+
+      {/* 🗺️ Map */}
       <div
         style={{
-          height: 220,
+          height: 300,
           borderRadius: 12,
           overflow: 'hidden',
-          marginBottom: 16,
-          background: '#f0f0f0',
+          marginBottom: 20,
+          background: '#1f2937',
+          position: 'relative'
         }}
       >
         {location ? (
@@ -96,6 +122,7 @@ export default function IndexPage() {
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <Marker position={[location.lat, location.lng]} />
+            <Recenter lat={location.lat} lng={location.lng} />
           </MapContainer>
         ) : (
           <div
@@ -104,55 +131,88 @@ export default function IndexPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#666',
+              color: '#9ca3af',
               fontSize: 14,
             }}
           >
-            Map Preview
+            Enter an address to preview map
           </div>
         )}
       </div>
 
       {/* 📝 Address input with suggestions */}
-      <input
-        list="address-suggestions"
-        type="text"
-        placeholder="Enter arena address"
-        value={address}
-        onChange={e => setAddress(e.target.value)}
-        style={{
-          width: '100%',
-          padding: 10,
-          marginBottom: 12,
-          borderRadius: 6,
-          border: '1px solid #ccc',
-          backgroundColor: '#fff',
-          color: '#000', // ✅ FIX TEXT VISIBILITY
-          fontSize: 14,
-        }}
-      />
+      <div style={{ marginBottom: 16, position: 'relative' }}>
+        <input
+          type="text"
+          placeholder="Search arena... (e.g. Wembley Stadium)"
+          value={address}
+          onChange={handleInputChange}
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            borderRadius: 8,
+            border: '1px solid #374151',
+            backgroundColor: '#0a0e13',
+            color: 'white',
+            fontSize: 14,
+            outline: 'none'
+          }}
+        />
 
-      <datalist id="address-suggestions">
-        {suggestions.map((item, index) => (
-          <option key={index} value={item.display_name} />
-        ))}
-      </datalist>
+        {/* Custom Dropdown for better UX than datalist */}
+        {suggestions.length > 0 && address.length >= 3 && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            background: '#1f2937',
+            border: '1px solid #374151',
+            borderRadius: 8,
+            marginTop: 4,
+            zIndex: 1000,
+            maxHeight: 200,
+            overflowY: 'auto',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
+          }}>
+            {suggestions.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => handleSelectSuggestion(item)}
+                style={{
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                  color: '#e5e7eb',
+                  borderBottom: index !== suggestions.length - 1 ? '1px solid #374151' : 'none',
+                  fontSize: 14
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#374151'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                {item.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <button
         onClick={handleShowOnMap}
         disabled={loading}
         style={{
           width: '100%',
-          padding: 10,
-          borderRadius: 6,
-          background: '#1677ff',
+          padding: '12px',
+          borderRadius: 8,
+          background: '#2563eb',
           color: '#fff',
           border: 'none',
-          cursor: 'pointer',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          opacity: loading ? 0.7 : 1,
           fontSize: 14,
+          fontWeight: 600
         }}
       >
-        {loading ? 'Finding location...' : 'Show on Map'}
+        Show on Map
       </button>
     </div>
   )

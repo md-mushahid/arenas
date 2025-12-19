@@ -1,7 +1,6 @@
 'use client'
-import { Drawer, Tabs } from 'antd'
+import { Drawer} from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
-import { useState } from 'react'
 import NameTab from './NameTab'
 
 interface AddArenaDrawerProps {
@@ -10,16 +9,6 @@ interface AddArenaDrawerProps {
 }
 
 export default function AddArenaDrawer({ open, onClose }: AddArenaDrawerProps) {
-  const [activeTab, setActiveTab] = useState('name')
-
-  const tabItems = [
-    {
-      key: 'name',
-      label: 'Name',
-      children: <NameTab onClose={onClose} />,
-    },
-  ]
-
   return (
     <Drawer
       open={open}
@@ -44,12 +33,8 @@ export default function AddArenaDrawer({ open, onClose }: AddArenaDrawerProps) {
         </div>
       </div>
 
-      <div className="px-8">
-        <Tabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          items={tabItems}
-        />
+      <div className="px-8 py-6">
+        <NameTab onClose={onClose} />
       </div>
     </Drawer>
   )
