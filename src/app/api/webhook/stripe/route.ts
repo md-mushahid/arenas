@@ -4,11 +4,7 @@ import { adminDb } from "@/lib/firbaseAdminConfig";
 import admin from "firebase-admin";
 import Stripe from "stripe";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
