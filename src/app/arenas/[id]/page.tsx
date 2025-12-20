@@ -8,9 +8,11 @@ import { Spin } from "antd";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useAuthState } from "@/hooks/useAuthState";
 
 export default function ArenaDetailPage() {
   const { id: arenaId } = useParams();
+  const { user } = useAuthState();
 
   const [arena, setArena] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,8 @@ export default function ArenaDetailPage() {
 
     fetchArena();
   }, [arenaId]);
+
+  const isOwner = user?.uid === arena?.created_by;
 
   if (loading) return <Spin />;
 

@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "@/hooks/useAuthState";
-import { Avatar, Button, Modal, Tag, message } from "antd";
-import { EditOutlined, EnvironmentOutlined, CalendarOutlined, ClockCircleOutlined, DollarCircleOutlined, MailOutlined } from "@ant-design/icons";
+import { Avatar, Button, Modal, Spin, Tag, message } from "antd";
+import { EditOutlined, EnvironmentOutlined, CalendarOutlined, ClockCircleOutlined, DollarCircleOutlined, MailOutlined, DollarOutlined, UserOutlined } from "@ant-design/icons";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import dayjs from "dayjs";
 import AddArenaDrawer from "@/components/arenas/AddArena";
@@ -23,6 +23,7 @@ import { updateUser } from "@/actions/user";
 interface Booking {
   id: string;
   arena_id: string;
+  arena_name: string;
   start_time: string;
   end_time: string;
   status: string;
@@ -32,7 +33,7 @@ interface Booking {
 }
 
 const customIcon = typeof window !== 'undefined' ? require('leaflet').divIcon({
-      html: `
+  html: `
         <div style="
           position: relative;
           width: 40px;
@@ -55,11 +56,11 @@ const customIcon = typeof window !== 'undefined' ? require('leaflet').divIcon({
           </svg>
         </div>
       `,
-      className: 'custom-marker-icon',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -40]
-    }) : null
+  className: 'custom-marker-icon',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40]
+}) : null
 
 export default function DashboardPage() {
   const { user, loading } = useAuthState();
@@ -67,6 +68,7 @@ export default function DashboardPage() {
   const { arenas, loading: arenasLoading } = useMyArenas(user?.uid);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
+  console.log('bookings', bookings)
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [profileImageTemp, setProfileImageTemp] = useState<string>("");
@@ -100,7 +102,12 @@ export default function DashboardPage() {
     async function fetchBookings() {
       if (user?.uid) {
         try {
-          const res = await fetch(`/api/bookings/user?userId=${user.uid}`);
+          const token = await user.getIdToken();
+          const res = await fetch(`/api/bookings/user?userId=${user.uid}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           if (res.ok) {
             const data = await res.json();
             setBookings(data.bookings || []);
@@ -118,28 +125,97 @@ export default function DashboardPage() {
   const handleUpdateProfile = async () => {
     if (!profileImageTemp || !user?.uid) return;
 
+    setSavingProfile(true);
     try {
-      setSavingProfile(true);
       await updateUser(user.uid, { photoURL: profileImageTemp });
-      message.success("Profile updated successfully!");
+      message.success("Profile photo updated successfully!");
       setIsProfileModalOpen(false);
-      setProfileImageTemp("");
       window.location.reload();
     } catch (error) {
       console.error("Failed to update profile:", error);
-      message.error("Failed to update profile");
+      message.error("Failed to update profile photo");
     } finally {
       setSavingProfile(false);
     }
   };
 
+  const handleCancelBooking = async (booking: Booking) => {
+    const startTime = new Date(booking.start_time);
+    const now = new Date();
+    const hoursDifference = (startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-  if (loading || userLoading) {
+    if (hoursDifference < 24) {
+      message.error(`Cannot cancel booking less than 24 hours before start time. ${hoursDifference.toFixed(1)} hours remaining.`);
+      return;
+    }
+
+    Modal.confirm({
+      title: "Cancel Booking",
+      content: (
+        <div>
+          <p>Are you sure you want to cancel this booking?</p>
+          <div className="mt-4 p-3 bg-gray-100 rounded">
+            <p><strong>Date:</strong> {dayjs(booking.start_time).format("MMM D, YYYY")}</p>
+            <p><strong>Time:</strong> {dayjs(booking.start_time).format("h:mm A")}</p>
+            <p><strong>Duration:</strong> {booking.total_booking_hours} hour(s)</p>
+            <p><strong>Amount:</strong> ${(booking.amount / 100).toFixed(2)}</p>
+          </div>
+          <p className="mt-3 text-green-600 text-sm">
+            ✓ You can cancel this booking (more than 24 hours before start time)
+          </p>
+        </div>
+      ),
+      okText: "Yes, Cancel Booking",
+      okType: "danger",
+      cancelText: "No, Keep It",
+      onOk: async () => {
+        try {
+          const token = await user?.getIdToken();
+
+          const response = await fetch("/api/bookings/cancel", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              orderId: booking.id,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to cancel booking");
+          }
+
+          message.success("Booking cancelled successfully");
+
+          setBookings((prev) => prev.filter((b) => b.id !== booking.id));
+        } catch (error: any) {
+          console.error("Error cancelling booking:", error);
+          message.error(error.message || "Failed to cancel booking");
+        }
+      },
+    });
+  };
+
+  const canCancelBooking = (startTime: string) => {
+    const start = new Date(startTime);
+    const now = new Date();
+    const hoursDifference = (start.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursDifference >= 24;
+  };
+
+  if (loading || userLoading || arenasLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0e13] flex items-center justify-center text-white">
-        Loading...
+      <div className="flex min-h-screen bg-[#0a0e13] items-center justify-center">
+        <Spin size="large" />
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
@@ -164,6 +240,7 @@ export default function DashboardPage() {
                 <Avatar
                   size={120}
                   src={userInfo?.photoURL || user?.photoURL}
+                  icon={!userInfo?.photoURL && !user?.photoURL ? <UserOutlined /> : undefined}
                   className="border-4 border-[#1f2937] shadow-2xl"
                 />
                 <button
@@ -214,34 +291,73 @@ export default function DashboardPage() {
 
           {bookings.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bookings.map((booking) => (
-                <div
-                  key={booking.id}
-                  className="bg-[#111620] rounded-xl p-6 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-gray-500 text-xs font-mono">#{booking.id.slice(-6)}</span>
-                    <Tag color={booking.status === "paid" ? "success" : "error"} className="mr-0 rounded-md">
-                      {booking.status.toUpperCase()}
-                    </Tag>
-                  </div>
+              {bookings.map((booking) => {
+                const isPast = new Date(booking.end_time) < new Date();
 
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-3 text-gray-300">
-                      <CalendarOutlined className="text-gray-500" />
-                      <span className="font-medium">{dayjs(booking.start_time).format("MMM D, YYYY")}</span>
+                return (
+                  <div
+                    key={booking.id}
+                    className={`bg-[#111620] rounded-xl p-6 border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden ${isPast
+                        ? 'border-gray-800/50 opacity-70'
+                        : 'border-gray-800 hover:border-blue-500/50'
+                      }`}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <span className="text-gray-500 text-xs font-mono">#{booking.id.slice(-6)}</span>
+                      <Tag
+                        color={isPast ? "default" : booking.status === "paid" ? "success" : "error"}
+                        className="mr-0 rounded-md"
+                      >
+                        {isPast ? "COMPLETED" : booking.status.toUpperCase()}
+                      </Tag>
                     </div>
-                    <div className="flex items-center gap-3 text-gray-300">
-                      <ClockCircleOutlined className="text-gray-500" />
-                      <span>{dayjs(booking.start_time).format("h:mm A")} ({booking.total_booking_hours}h)</span>
+
+                    {/* Arena Name */}
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <EnvironmentOutlined className="text-yellow-500" />
+                        {booking.arena_name}
+                      </h3>
                     </div>
-                    <div className="flex items-center gap-3 text-gray-300">
-                      <DollarCircleOutlined className="text-gray-500" />
-                      <span>{booking.amount} {booking.currency.toUpperCase()}</span>
+
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <CalendarOutlined className="text-gray-500" />
+                        <span className="font-medium">{dayjs(booking.start_time).format("MMM D, YYYY")}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <ClockCircleOutlined className="text-gray-500" />
+                        <span>{dayjs(booking.start_time).format("h:mm A")} ({booking.total_booking_hours}h)</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <DollarCircleOutlined className="text-gray-500" />
+                        <span>${(booking.amount / 100).toFixed(2)}</span>
+                      </div>
                     </div>
+
+                    {!isPast && canCancelBooking(booking.start_time) && (
+                      <Button
+                        danger
+                        block
+                        onClick={() => handleCancelBooking(booking)}
+                        className="mt-4"
+                      >
+                        Cancel Booking
+                      </Button>
+                    )}
+                    {!isPast && !canCancelBooking(booking.start_time) && (
+                      <div className="text-xs text-gray-500 text-center mt-4">
+                        Cannot cancel (less than 24h before start)
+                      </div>
+                    )}
+                    {isPast && (
+                      <div className="text-xs text-gray-400 text-center mt-4 italic">
+                        This booking has been completed
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="bg-[#111620] rounded-xl p-8 border border-gray-800 text-center text-gray-400">
@@ -322,15 +438,26 @@ export default function DashboardPage() {
                         {arena.contact_email && <p className="text-gray-500 text-xs truncate">✉️ {arena.contact_email}</p>}
                       </div>
 
-                      <Button
-                        block
-                        ghost
-                        type="default"
-                        className="bg-gray-800 border-gray-700 text-gray-300 hover:text-white hover:border-yellow-500 hover:bg-yellow-500/10 mt-auto"
-                        onClick={() => openEditDrawer(arena.id)}
-                      >
-                        Edit Arena Details
-                      </Button>
+                      <div className="space-y-2 mt-auto">
+                        <Button
+                          block
+                          type="primary"
+                          icon={<DollarOutlined />}
+                          className="bg-green-600 hover:bg-green-500 border-none"
+                          onClick={() => window.location.href = `/arenas/${arena.id}/bookings`}
+                        >
+                          View Bookings
+                        </Button>
+                        <Button
+                          block
+                          ghost
+                          type="default"
+                          className="bg-gray-800 border-gray-700 text-gray-300 hover:text-white hover:border-yellow-500 hover:bg-yellow-500/10"
+                          onClick={() => openEditDrawer(arena.id)}
+                        >
+                          Edit Arena Details
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
