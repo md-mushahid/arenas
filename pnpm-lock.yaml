@@ -26,9 +26,6 @@ importers:
       '@stripe/stripe-js':
         specifier: ^8.5.3
         version: 8.5.3
-      '@syncfusion/ej2-react-schedule':
-        specifier: ^31.2.15
-        version: 31.2.15
       antd:
         specifier: ^6.1.0
         version: 6.1.0(date-fns@4.1.0)(luxon@3.7.2)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1233,61 +1230,6 @@ packages:
 
   '@swc/helpers@0.5.5':
     resolution: {integrity: sha512-KGYxvIOXcceOAbEk4bi/dVLEK9z8sZ0uBB3Il5b1rhfClSpcX0yfRO0KmTkqR2cnQDymwLB+25ZyMzICg/cm/A==}
-
-  '@syncfusion/ej2-base@31.2.18':
-    resolution: {integrity: sha512-sZyoftjdPyP1rM/0CxHKxt/2p+FGXtqxqFb6I2E7lWVVt5uQfs31mCWjCI0nWV0AmqbGw7uHa+1NFA8iKiUauQ==}
-    hasBin: true
-
-  '@syncfusion/ej2-buttons@31.2.18':
-    resolution: {integrity: sha512-EWlj9f1dTzyVL8hrmEyidKPhmkamEqvZp3qR/aTM2b3conkOGm8/rTSSZSz3SkHBLmW0PaIb4DkpIlFZlfGRfQ==}
-
-  '@syncfusion/ej2-calendars@31.2.18':
-    resolution: {integrity: sha512-sej3hSKOXhiLR3znOWSbJFsgMeZKCPDlWCV3I9CzApDSbCN3nr6PCho1wQ9YgcofzZ1tsVcrRv4ZXCseoGsX8g==}
-
-  '@syncfusion/ej2-compression@31.2.12':
-    resolution: {integrity: sha512-kE7smjWSQ4YVgDMIBjE1A0K63NwXU80AzBEwt+ls6x8TeP5Fia5b0gSK8IIPusniZJc2Iy4u0OikG6tRc5IVyg==}
-
-  '@syncfusion/ej2-data@31.2.18':
-    resolution: {integrity: sha512-CtsLfXPvXT1WmidwyyJiRxC++QxQrkWvhl8Nt+lay/nsN2t3ztOTYX6lN5rtPdFOkTtPBpNfPjJm0oli+bLhCw==}
-
-  '@syncfusion/ej2-dropdowns@31.2.18':
-    resolution: {integrity: sha512-KFY+Vy9cLAfJUIAKs4pk6SjPX0jcYkeUscDqiF2HjdgBDM0+G5n3mlj8cq9mPevMtoQcef+TaRqc7N4SgL2ueA==}
-
-  '@syncfusion/ej2-excel-export@31.2.12':
-    resolution: {integrity: sha512-+UiH3E/GSfvB9e/OdRJq9ZV89tF3+E/ApCz1U/yEk0l32ZlV7p03KOhDAFm5oGsoW8jAZ1TD+vWu5ZGrLESPQA==}
-
-  '@syncfusion/ej2-file-utils@31.2.12':
-    resolution: {integrity: sha512-7IjF5P0+UbPPjDcnA2TQiOjdEtkmr4/dW8oKn+k88bchttC23GNgdENV19eE8Rs+9lr2iRPQid/RTbI8l2VEQA==}
-
-  '@syncfusion/ej2-icons@31.2.12':
-    resolution: {integrity: sha512-hunyEoMWV5a40qCCURN5ggmjMM7srqMMlaUqRT1YBDRu4yDbKpJDeiA1QpAr2hHmEOwCKHkWX/L7WWQ2YRXqKg==}
-
-  '@syncfusion/ej2-inputs@31.2.15':
-    resolution: {integrity: sha512-1aDfcjMln2vZzaSguU4k6yug1gLOyOv7Jp9Hx1g3mzVp712oDEhBsr8yWtyWtkDmkgCjetV2d2Bcih0K45lXaw==}
-
-  '@syncfusion/ej2-lists@31.2.12':
-    resolution: {integrity: sha512-cxrrpv9aQf2li9iC0uWsIqXqVYmYZMiROo0WwXZrz/cGBe59tXhqkTnLjVScZ7mZtZJNEjovF+fxUGWwb6lu3w==}
-
-  '@syncfusion/ej2-navigations@31.2.16':
-    resolution: {integrity: sha512-V1l/utJYcTALLJkgMnh106r/o2Td2gznH8N3319mNSZ5raKIVVj1zZrDOksFsK7JZxCF8BBjNaB1TAvcl/7Tbw==}
-
-  '@syncfusion/ej2-notifications@31.2.12':
-    resolution: {integrity: sha512-ltzlR5DVTe4fIFxI5zHhBs2K1A0HGVHGebahGQrEaM8JNqmQGWVExq1Djfsb1GYADrDQz8SuYUIZzlSQWA6JEw==}
-
-  '@syncfusion/ej2-popups@31.2.12':
-    resolution: {integrity: sha512-3UnKISEkFhv0tAo7Q/fVpc3UHv0a9sVN4K3kQwklU+LNtFUia58Fbu5gJf/sRiYGZgb0BYdpKbJvSI0Cktet+Q==}
-
-  '@syncfusion/ej2-react-base@31.2.12':
-    resolution: {integrity: sha512-EIulpysvvmbJ462mbIoK455CrvRhpMXkqzSWNf+6ZbKoTSMhN4jX0CBjI4zxwqNPTMDUiFoPbe7uujxmNS23Lg==}
-
-  '@syncfusion/ej2-react-schedule@31.2.15':
-    resolution: {integrity: sha512-kfTOYWSoAnQ1wwbixf+FHYJvfp1o2HbthPXWTsk3Vm+RyNiH5LmbCj+T23g7FIx77QE2U5SdLnKiDSDlojWseg==}
-
-  '@syncfusion/ej2-schedule@31.2.15':
-    resolution: {integrity: sha512-/EJdEhPPcUf8AcGLxcwwp/beFmY2HdR9HXQcg+sypvu86xUhHnDtY5LOI0P67E4OpmBn6M1elNR+Ch/0kIgpdQ==}
-
-  '@syncfusion/ej2-splitbuttons@31.2.12':
-    resolution: {integrity: sha512-Zel8IIeKqIPpYe3EaLd8KCcu0aJKzbgaTuH0oXzWSWE7iSffTgNZh8LHoeBbCOWOS6EPlCFYgWDHqZgjUajFdA==}
 
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -5059,111 +5001,6 @@ snapshots:
       '@swc/counter': 0.1.3
       tslib: 2.8.1
 
-  '@syncfusion/ej2-base@31.2.18':
-    dependencies:
-      '@syncfusion/ej2-icons': 31.2.12
-
-  '@syncfusion/ej2-buttons@31.2.18':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-
-  '@syncfusion/ej2-calendars@31.2.18':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-      '@syncfusion/ej2-inputs': 31.2.15
-      '@syncfusion/ej2-lists': 31.2.12
-      '@syncfusion/ej2-popups': 31.2.12
-
-  '@syncfusion/ej2-compression@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-file-utils': 31.2.12
-
-  '@syncfusion/ej2-data@31.2.18':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-
-  '@syncfusion/ej2-dropdowns@31.2.18':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-data': 31.2.18
-      '@syncfusion/ej2-inputs': 31.2.15
-      '@syncfusion/ej2-lists': 31.2.12
-      '@syncfusion/ej2-navigations': 31.2.16
-      '@syncfusion/ej2-notifications': 31.2.12
-      '@syncfusion/ej2-popups': 31.2.12
-
-  '@syncfusion/ej2-excel-export@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-compression': 31.2.12
-
-  '@syncfusion/ej2-file-utils@31.2.12': {}
-
-  '@syncfusion/ej2-icons@31.2.12': {}
-
-  '@syncfusion/ej2-inputs@31.2.15':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-      '@syncfusion/ej2-popups': 31.2.12
-      '@syncfusion/ej2-splitbuttons': 31.2.12
-
-  '@syncfusion/ej2-lists@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-      '@syncfusion/ej2-data': 31.2.18
-      '@syncfusion/ej2-popups': 31.2.12
-
-  '@syncfusion/ej2-navigations@31.2.16':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-      '@syncfusion/ej2-data': 31.2.18
-      '@syncfusion/ej2-inputs': 31.2.15
-      '@syncfusion/ej2-lists': 31.2.12
-      '@syncfusion/ej2-popups': 31.2.12
-
-  '@syncfusion/ej2-notifications@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-      '@syncfusion/ej2-popups': 31.2.12
-
-  '@syncfusion/ej2-popups@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-
-  '@syncfusion/ej2-react-base@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-
-  '@syncfusion/ej2-react-schedule@31.2.15':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-react-base': 31.2.12
-      '@syncfusion/ej2-schedule': 31.2.15
-
-  '@syncfusion/ej2-schedule@31.2.15':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-buttons': 31.2.18
-      '@syncfusion/ej2-calendars': 31.2.18
-      '@syncfusion/ej2-data': 31.2.18
-      '@syncfusion/ej2-dropdowns': 31.2.18
-      '@syncfusion/ej2-excel-export': 31.2.12
-      '@syncfusion/ej2-inputs': 31.2.15
-      '@syncfusion/ej2-lists': 31.2.12
-      '@syncfusion/ej2-navigations': 31.2.16
-      '@syncfusion/ej2-popups': 31.2.12
-
-  '@syncfusion/ej2-splitbuttons@31.2.12':
-    dependencies:
-      '@syncfusion/ej2-base': 31.2.18
-      '@syncfusion/ej2-popups': 31.2.12
-
   '@tootallnate/once@2.0.0':
     optional: true
 
@@ -5965,8 +5802,8 @@ snapshots:
       '@typescript-eslint/parser': 8.49.0(eslint@8.57.1)(typescript@5.9.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -5985,7 +5822,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
@@ -5996,22 +5833,22 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.49.0(eslint@8.57.1)(typescript@5.9.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -6022,7 +5859,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
