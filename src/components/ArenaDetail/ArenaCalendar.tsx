@@ -11,10 +11,12 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import useArenaBooking from "@/hooks/useAreanaBooking";
 import { ClockCircleOutlined, CheckCircleOutlined, CalendarOutlined, DollarOutlined } from "@ant-design/icons";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const localizer = momentLocalizer(moment);
 
 export default function MyCalendar({ arena }: any) {
+  const { user } = useAuthState();
   const { events, selectedSlots, setSelectedSlots, handlePay, loading, bookings } =
     useArenaBooking(arena);
   const [date, setDate] = useState(new Date());
@@ -49,6 +51,12 @@ export default function MyCalendar({ arena }: any) {
   };
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
+    // First check: user must be logged in
+    if (!user) {
+      message.error("You have to be logged in");
+      return;
+    }
+
     if (isPastSlot(slotInfo)) {
       message.error("You cannot book previous time slots.");
       return;
@@ -139,14 +147,6 @@ export default function MyCalendar({ arena }: any) {
             <h3 className="text-xl font-semibold flex items-center gap-2">
               <CalendarOutlined className="text-blue-500" /> Availability
             </h3>
-            {arena?.price_per_hour && (
-              <div className="flex items-center gap-2 bg-green-600/20 px-3 py-1.5 rounded-lg border border-green-600/30">
-                <DollarOutlined className="text-green-500" />
-                <span className="text-green-400 font-semibold">
-                  ${arena.price_per_hour}/hour
-                </span>
-              </div>
-            )}
             <div className="flex gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-blue-500"></span>
@@ -186,7 +186,7 @@ export default function MyCalendar({ arena }: any) {
           </div>
         </div>
       </Card>
-      {selectedSlots.length > 0 && (
+      {selectedSlots.length > 0 && user && (
         <div className="w-full xl:w-72 shrink-0 animate-slide-in-right">
           <Card className="border border-blue-500/30 bg-blue-500/5 h-full flex flex-col">
             <div className="flex flex-col h-full">
@@ -211,12 +211,26 @@ export default function MyCalendar({ arena }: any) {
               </div>
 
               <div className="shrink-0 pt-3 border-t border-blue-500/20">
-                <div className="flex justify-between items-center mb-3 text-gray-300 text-sm">
-                  <span>Total:</span>
-                  <span className="font-semibold text-white">
-                    {selectedSlots.reduce((acc, slot) => acc + (slot.end.getTime() - slot.start.getTime()) / (1000 * 60 * 60), 0)} hrs
-                  </span>
-                </div>
+                {arena?.price_per_hour && (
+                  <div className="mb-3 space-y-2">
+                    <div className="flex justify-between items-center text-gray-400 text-sm">
+                      <span>Price per hour:</span>
+                      <span className="font-medium text-gray-300">${arena.price_per_hour}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-400 text-sm">
+                      <span>Total hours:</span>
+                      <span className="font-medium text-gray-300">
+                        {selectedSlots.reduce((acc, slot) => acc + (slot.end.getTime() - slot.start.getTime()) / (1000 * 60 * 60), 0)} hrs
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2 border-t border-blue-500/20">
+                      <span className="font-semibold text-white">Total amount:</span>
+                      <span className="font-bold text-green-400 text-lg">
+                        ${(selectedSlots.reduce((acc, slot) => acc + (slot.end.getTime() - slot.start.getTime()) / (1000 * 60 * 60), 0) * arena.price_per_hour).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <Button
                   type="primary"
                   block

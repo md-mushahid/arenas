@@ -17,6 +17,7 @@ interface Suggestion {
 export default function NameTab({ onClose }: { onClose: () => void }) {
   const { user } = useAuthState();
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [imageUrl, setImageUrl] = useState<string>("");
 
   // Form State
@@ -32,16 +33,100 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
     longitude: 0,
   });
 
+  // Validation errors state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   // Location Search State
   const [addressQuery, setAddressQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [searching, setSearching] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationSelected, setLocationSelected] = useState(false);
+
+  // Validation functions
+  const validateName = (value: string): string => {
+    if (!value) return "Arena name is required";
+    if (value.length < 3) return "Arena name must be at least 3 characters";
+    return "";
+  };
+
+  const validateAddress = (): string => {
+    if (!addressQuery) return "Address is required";
+    if (!locationSelected) return "Please select an address from the dropdown suggestions";
+    return "";
+  };
+
+  const validateCity = (value: string): string => {
+    if (!value) return "City is required";
+    return "";
+  };
+
+  const validateCountry = (value: string): string => {
+    if (!value) return "Country is required";
+    return "";
+  };
+
+  const validateEmail = (value: string): string => {
+    if (!value) return ""; // Email is optional
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return "Please enter a valid email address";
+    return "";
+  };
+
+  const validatePhone = (value: string): string => {
+    if (!value) return ""; // Phone is optional
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/;
+    if (!phoneRegex.test(value)) return "Please enter a valid phone number";
+    return "";
+  };
+
+  const validatePrice = (value: string): string => {
+    if (!value) return "Hourly rate is required";
+    const price = parseFloat(value);
+    if (isNaN(price)) return "Please enter a valid number";
+    if (price <= 0) return "Price must be greater than 0";
+    return "";
+  };
 
   // Handle Input Changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // Handle blur to validate
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    let error = "";
+
+    switch (name) {
+      case "name":
+        error = validateName(value);
+        break;
+      case "city":
+        error = validateCity(value);
+        break;
+      case "country":
+        error = validateCountry(value);
+        break;
+      case "contact_email":
+        error = validateEmail(value);
+        break;
+      case "contact_number":
+        error = validatePhone(value);
+        break;
+      case "price_per_hour":
+        error = validatePrice(value);
+        break;
+    }
+
+    if (error) {
+      setErrors(prev => ({ ...prev, [name]: error }));
+    }
   };
 
   // Debounced Search for Photon API
@@ -87,6 +172,9 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
     setAddressQuery(suggestion.label);
     setSuggestions([]);
     setSelectedLocation({ lat: suggestion.lat, lng: suggestion.lng });
+    setLocationSelected(true);
+    // Clear address error when location is selected
+    setErrors(prev => ({ ...prev, address: "" }));
 
     setFormData((prev) => ({
       ...prev,
@@ -98,6 +186,15 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
     }));
   };
 
+  // Clear location selected flag when user types
+  const handleAddressQueryChange = (value: string) => {
+    setAddressQuery(value);
+    if (locationSelected) {
+      setLocationSelected(false);
+      setErrors(prev => ({ ...prev, address: "Please select an address from suggestions" }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -106,12 +203,30 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
       return;
     }
 
-    if (!formData.name || !formData.address || !formData.city || !formData.country || !formData.price_per_hour) {
-      message.warning("Please fill in all required fields marked with *");
+    // Validate all fields
+    const validationErrors: Record<string, string> = {
+      name: validateName(formData.name),
+      address: validateAddress(),
+      city: validateCity(formData.city),
+      country: validateCountry(formData.country),
+      contact_email: validateEmail(formData.contact_email),
+      contact_number: validatePhone(formData.contact_number),
+      price_per_hour: validatePrice(formData.price_per_hour),
+    };
+
+    // Filter out empty errors
+    const filteredErrors = Object.fromEntries(
+      Object.entries(validationErrors).filter(([_, value]) => value !== "")
+    );
+
+    if (Object.keys(filteredErrors).length > 0) {
+      setErrors(filteredErrors);
+      message.error("Please fix all validation errors before submitting");
       return;
     }
 
     setLoading(true);
+    setLoadingMessage("Creating arena...");
 
     try {
       const idToken = await auth.currentUser?.getIdToken();
@@ -137,6 +252,7 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
       }
 
       message.success("Arena created successfully!");
+      setLoadingMessage("Redirecting...");
 
       // Reset form
       setFormData({
@@ -153,12 +269,17 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
       setImageUrl("");
       setAddressQuery("");
       setSelectedLocation(null);
+      setLocationSelected(false);
+      setErrors({});
 
-      onClose();
-      window.location.reload();
+      setTimeout(() => {
+        onClose();
+        window.location.reload();
+      }, 500);
     } catch (error: any) {
       console.error("Error creating arena:", error);
-      message.error(error.message || "Failed to create arena");
+      message.error(error.message || "Failed to create arena. Please try again.");
+      setLoadingMessage("");
     } finally {
       setLoading(false);
     }
@@ -174,9 +295,14 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
           name="name"
           value={formData.name}
           onChange={handleChange}
+          onBlur={handleBlur}
           placeholder="e.g. Grand Central Stadium"
-          className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+          className={`w-full bg-[#0a0e13] border rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+            }`}
         />
+        {errors.name && (
+          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+        )}
       </div>
 
       {/* Address Search */}
@@ -189,9 +315,10 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
           <input
             type="text"
             value={addressQuery}
-            onChange={(e) => setAddressQuery(e.target.value)}
+            onChange={(e) => handleAddressQueryChange(e.target.value)}
             placeholder="Type to search (e.g. 123 Main St...)"
-            className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+            className={`w-full bg-[#0a0e13] border rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.address ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+              }`}
             autoComplete="off"
           />
           {searching && (
@@ -200,7 +327,12 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
             </div>
           )}
         </div>
-        <p className="text-xs text-gray-500">Search to auto-fill coordinates and city</p>
+        {!errors.address && (
+          <p className="text-xs text-gray-500">Search and select to auto-fill coordinates and city</p>
+        )}
+        {errors.address && (
+          <p className="text-red-500 text-sm mt-1">{errors.address}</p>
+        )}
 
         {/* Suggestions Dropdown */}
         {suggestions.length > 0 && (
@@ -228,8 +360,13 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
             name="city"
             value={formData.city}
             onChange={handleChange}
-            className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+            onBlur={handleBlur}
+            className={`w-full bg-[#0a0e13] border rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.city ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+              }`}
           />
+          {errors.city && (
+            <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+          )}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-300">Country <span className="text-red-500">*</span></label>
@@ -238,8 +375,13 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+            onBlur={handleBlur}
+            className={`w-full bg-[#0a0e13] border rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.country ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+              }`}
           />
+          {errors.country && (
+            <p className="text-red-500 text-sm mt-1">{errors.country}</p>
+          )}
         </div>
       </div>
 
@@ -256,12 +398,17 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
               name="price_per_hour"
               value={formData.price_per_hour}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="0.00"
               min="0"
               step="0.01"
-              className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+              className={`w-full bg-[#0a0e13] border rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.price_per_hour ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+                }`}
             />
           </div>
+          {errors.price_per_hour && (
+            <p className="text-red-500 text-sm mt-1">{errors.price_per_hour}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -275,9 +422,15 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
               name="contact_email"
               value={formData.contact_email}
               onChange={handleChange}
-              className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+              onBlur={handleBlur}
+              placeholder="arena@example.com"
+              className={`w-full bg-[#0a0e13] border rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.contact_email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+                }`}
             />
           </div>
+          {errors.contact_email && (
+            <p className="text-red-500 text-sm mt-1">{errors.contact_email}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -291,9 +444,15 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
               name="contact_number"
               value={formData.contact_number}
               onChange={handleChange}
-              className="w-full bg-[#0a0e13] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none"
+              onBlur={handleBlur}
+              placeholder="+1234567890"
+              className={`w-full bg-[#0a0e13] border rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:ring-1 transition-colors outline-none ${errors.contact_number ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-blue-500 focus:ring-blue-500'
+                }`}
             />
           </div>
+          {errors.contact_number && (
+            <p className="text-red-500 text-sm mt-1">{errors.contact_number}</p>
+          )}
         </div>
       </div>
 
@@ -334,10 +493,15 @@ export default function NameTab({ onClose }: { onClose: () => void }) {
         <button
           type="submit"
           disabled={loading}
-          className={`px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
         >
-          {loading ? <LoadingOutlined className="mr-2" /> : null}
-          {loading ? "Creating..." : "Create Arena"}
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <LoadingOutlined />
+              {loadingMessage || 'Creating...'}
+            </span>
+          ) : 'Create Arena'}
         </button>
       </div>
     </form>

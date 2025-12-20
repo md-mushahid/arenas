@@ -12,16 +12,13 @@ const useArenaBooking = (arena: any) => {
   const [loading, setLoading] = useState(false);
 
   const getConfirmedBookings = async () => {
-    if (!arena?.id || !user) return;
+    if (!arena?.id) return;
     setLoading(true);
 
     try {
-      const token = await user.getIdToken();
-      const res = await fetch(`/api/arena?arenaId=${arena.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // Fetch bookings without authentication - everyone can view
+      const res = await fetch(`/api/arena?arenaId=${arena.id}`);
+      
       if (!res.ok) {
         const err = await res.json();
         console.error("Failed to fetch bookings:", err);
@@ -38,11 +35,6 @@ const useArenaBooking = (arena: any) => {
         try {
           const { collection, query, where, getDocs } = await import("firebase/firestore");
           const { db } = await import("@/lib/firebaseConfig");
-          
-          // Firestore 'in' query supports max 10 items. If we have more, we might need multiple queries or just fetch one by one (or strict limit).
-          // For now, let's assume < 10 active bookers or handle batches if needed. 
-          // To be safe and simple: just fetch all users? No, that's bad.
-          // Let's loop if chunks > 10.
           
           const uniqueIds = userIds as string[];
           const chunks = [];
@@ -84,19 +76,37 @@ const useArenaBooking = (arena: any) => {
   }, [arena, authLoading]);
 
   const handlePay = async (slots: any[]) => {
-    if (!slots.length) return;
-    const sorted = [...slots].sort(
-      (a, b) => a.start.getTime() - b.start.getTime()
-    );
-    const startTime = sorted[0].start;
-    const endTime = sorted[sorted.length - 1].end;
-    const totalHours =
-      (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+    if (!user) {
+      message.error("Please log in to book a slot");
+      return;
+    }
+
+    if (!slots.length) {
+      message.error("Please select at least one time slot");
+      return;
+    }
+
+    // Check if any selected slot is in the past
+    const now = new Date();
+    const hasPastSlots = slots.some(slot => new Date(slot.start) < now);
+    if (hasPastSlots) {
+      message.error("Cannot book slots in the past");
+      return;
+    }
+
+    setLoading(true);
     try {
-      if (!user) {
-        throw new Error("User not logged in");
-      }
+      // Sort selected slots to ensure correct start and end times
+      const sortedSlots = [...slots].sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+      );
+
+      const startTime = sortedSlots[0].start;
+      const endTime = sortedSlots[sortedSlots.length - 1].end;
+      const totalHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+
       const token = await user.getIdToken();
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -110,7 +120,7 @@ const useArenaBooking = (arena: any) => {
           end_time: endTime,
         }),
       });
-
+   
       const data = await res.json();
 
       if (data?.url) {

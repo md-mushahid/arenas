@@ -24,6 +24,9 @@ export async function POST(request: NextRequest) {
       contact_email,
       contact_number,
       cover_image_url,
+      latitude,
+      longitude,
+      price_per_hour,
     } = body;
 
     if (!name || !address || !city || !country) {
@@ -38,6 +41,9 @@ export async function POST(request: NextRequest) {
       address,
       city,
       country,
+      latitude: latitude || 0,
+      longitude: longitude || 0,
+      price_per_hour: price_per_hour || 0,
       full: 1,
       seven: 0,
       rooms: 0,
@@ -80,14 +86,6 @@ export async function POST(request: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const decoded = await adminAuth.verifyIdToken(token);
-
     const arenaId = req.nextUrl.searchParams.get("arenaId");
     if (!arenaId) {
       return NextResponse.json({ error: "arenaId required" }, { status: 400 });
