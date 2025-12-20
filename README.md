@@ -1,19 +1,3 @@
-# 🏟️ Arena Booking Platform
-
-**A high-performance, full-stack arena management ecosystem.**
-
-This platform centralizes the sports venue lifecycle—allowing arena owners (Coaches) to list and manage facilities while providing athletes (Players) with a real-time booking and secure payment experience.
-
-**🚀 Live Demo:** [https://arenas.onrender.com](https://arenas.onrender.com)  
-
----
-
-## 📖 Documentation
-- **[User Guide](USER_GUIDE.md)** - Step-by-step manual for Players and Arena Owners.
-- **[Project Documentation](PROJECT_DOCUMENTATION.md)** - In-depth technical details and limitations.
-
----
-
 ## 📋 Project Overview
 
 Built with **Next.js 14**, **Firebase**, and **Stripe**, this project addresses the core needs of the sports community:
