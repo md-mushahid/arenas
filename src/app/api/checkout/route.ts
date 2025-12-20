@@ -24,8 +24,27 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const per_hour_price = 1000;
-    const total_price = total_booking_hours * per_hour_price;
+
+    const arenaDoc = await adminDb.collection("arenas").doc(arena_id).get();
+    if (!arenaDoc.exists) {
+      return NextResponse.json(
+        { error: "Arena not found" },
+        { status: 404 }
+      );
+    }
+
+    const arenaData = arenaDoc.data();
+    const per_hour_price = arenaData?.price_per_hour || 0;
+
+    if (per_hour_price <= 0) {
+      return NextResponse.json(
+        { error: "Invalid arena pricing" },
+        { status: 400 }
+      );
+    }
+
+    const total_price = total_booking_hours * per_hour_price * 100;
+
     const pendingOrderData = {
       user_id: uid,
       arena_id: arena_id,
@@ -51,8 +70,8 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "Arena Booking",
-              description: `${total_booking_hours} hour(s) booking`,
+              name: `${arenaData?.name || 'Arena'} Booking`,
+              description: `${total_booking_hours} hour(s) @ $${per_hour_price}/hour`,
             },
             unit_amount: total_price,
           },
