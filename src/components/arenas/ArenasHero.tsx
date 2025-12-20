@@ -36,9 +36,6 @@ export default function ArenasHero() {
             </span>
           </p>
         )}
-        <div className="text-green-400 text-sm font-medium">
-          2 300 Arenas · Sweden · Active
-        </div>
       </div>
       <AddArena open={open} onClose={onClose} />
     </section>

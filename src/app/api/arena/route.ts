@@ -92,13 +92,41 @@ export async function GET(req: NextRequest) {
     if (!arenaId) {
       return NextResponse.json({ error: "arenaId required" }, { status: 400 });
     }
-    console.log("arenaId", arenaId);
+
     const snapshot = await adminDb
       .collection("orders")
       .where("arena_id", "==", arenaId)
       .where("status", "==", "paid")
       .get();
 
+    // Get unique user IDs (like a SQL DISTINCT)
+    const userIds = Array.from(
+      new Set(snapshot.docs.map((doc) => doc.data().user_id))
+    );
+
+    // Fetch user names (client-side join)
+    let userMap: Record<string, string> = {};
+    if (userIds.length > 0) {
+      // Firestore 'in' query supports max 10 items, so we batch
+      const chunks = [];
+      for (let i = 0; i < userIds.length; i += 10) {
+        chunks.push(userIds.slice(i, i + 10));
+      }
+
+      for (const chunk of chunks) {
+        const usersSnapshot = await adminDb
+          .collection("users")
+          .where("user_id", "in", chunk)
+          .get();
+
+        usersSnapshot.forEach((doc) => {
+          const data = doc.data();
+          userMap[data.user_id] = data.full_name || data.name || "Unknown User";
+        });
+      }
+    }
+
+    // Map bookings with user names (like a SQL JOIN result)
     const bookings = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
@@ -107,9 +135,10 @@ export async function GET(req: NextRequest) {
         start_time: data.start_time,
         end_time: data.end_time,
         user_id: data.user_id,
+        user_name: userMap[data.user_id] || "Unknown User", // Joined data
       };
     });
-    console.log("bookings", bookings);
+
     return NextResponse.json({ bookings });
   } catch (err: any) {
     console.error("GET arena bookings error:", err);

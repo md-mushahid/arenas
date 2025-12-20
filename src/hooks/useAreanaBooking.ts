@@ -6,14 +6,8 @@ import { useEffect } from "react";
 const useArenaBooking = (arena: any) => {
   const { user, loading: authLoading } = useAuthState();
   const [bookings, setBookings] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([
-    {
-      title: "Booked",
-      start: new Date("2025-12-25T10:00:00.000Z"),
-      end: new Date("2025-12-25T12:00:00.000Z"),
-      description: "Booked by Team A",
-    },
-  ]);
+  const [events, setEvents] = useState<any[]>([]);
+  console.log('events', events)
   const [selectedSlots, setSelectedSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -67,13 +61,13 @@ const useArenaBooking = (arena: any) => {
             console.error("Error fetching user details:", error);
         }
       }
-
+      console.log('data', data)
       const calendarEvents = data.bookings.map((b: any) => ({
-        title: userMap[b.user_id] ? `Booked by ${userMap[b.user_id]}` : "Booked",
+        title: b.user_name ? `Booked by ${b.user_name}` : "Booked",
         start: new Date(b.start_time),
         end: new Date(b.end_time),
-        description: `Booked by ${userMap[b.user_id] || "User"}`,
-        resource: b // Keep original booking data
+        description: `Booked by ${b.user_name || "User"}`,
+        resource: b
       }));
       setEvents(calendarEvents);
     } catch (err) {
